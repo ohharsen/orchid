@@ -4,7 +4,7 @@ import '../stylesheets/login.css'
 function LoginComponent(props){
 
     return (
-      <div className="App">
+      <div className="container">
         <div className='login-side'>
           <h1>LOGIN</h1>
           <div className="login-form">

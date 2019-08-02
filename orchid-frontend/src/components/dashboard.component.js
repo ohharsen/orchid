@@ -5,7 +5,7 @@ function DashboardComponent(props){
 
     return (
       <div className="App">
-        <h1 className>Dashboard</h1>
+        <h1>Dashboard</h1>
       </div>
     );
   

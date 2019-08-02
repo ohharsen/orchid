@@ -1,7 +1,13 @@
+.container{
+ text-align: center;
+  display: flex;
+  width: 100%;
+}
 .login-side{
     min-width: 50%; 
     flex-grow: 1;
     height: 100vh;
+    overflow: auto;
   }
   
   .login-side h1{

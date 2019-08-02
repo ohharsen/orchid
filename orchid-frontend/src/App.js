@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
 import './App.css';
 import LoginComponent from './components/login.component';
 import DashboardComponent from './components/dashboard.component';
@@ -19,6 +19,8 @@ class App extends React.Component {
 
   handleLogin(e){
     e.preventDefault();
+    var form = e.target.parentNode;
+    console.log(form.childNodes[0].value + ' ' + form.childNodes[1].value);
     this.setState({
       isLoggedIn: true
     });
