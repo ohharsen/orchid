@@ -11,7 +11,7 @@ var CategorySchema = new Schema({
 });
 
 CategorySchema
-.vritual('url')
+.virtual('url')
 .get(function(){
     return '/categories/' + this._id;
 });

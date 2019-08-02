@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
 
 var Schema = mongoose.Schema;
 
@@ -11,7 +12,8 @@ var UserSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        enum: ['Admin', 'Employee']
     },
     username: {
       type: String,
@@ -25,14 +27,27 @@ var UserSchema = new mongoose.Schema({
     },
     stores: [{
         type: Schema.Types.ObjectId,
-        ref: Store
+        ref: 'Store'
     }]
   });
 
-//TODO encryption before save; limited role validation;
 
 UserSchema
 .virtual('url')
 .get(() => '/users/' + this._id);
+
+UserSchema
+.pre('save', function(next){
+    var user = this;
+    bcrypt.hash(this.password, 10, function(err, hash){
+        if(err) return next(err);
+        user.password = hash;
+        next();
+    });
+});
+
+UserSchema.methods.validatePassword = function(comparePassword, cb){
+    return bcrypt.compare(comparePassword, this.password, cb);
+}
 
 module.exports = mongoose.model('User', UserSchema);

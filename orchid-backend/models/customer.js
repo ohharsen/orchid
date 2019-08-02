@@ -34,11 +34,11 @@ var CustomerSchema = new Schema({
             validator: function(v){
                 return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(v);
             },
-            message: 'Email number not of appropriate format'
+            message: 'Email not of appropriate format'
         }
     },
-    date_joined: Date,
-    sales: Number,
+    date_joined: {type: Date, default: Date.now(), immutable: true},
+    sales: {type: Number, min: 0},
     store: {
         type: Schema.Types.ObjectId, 
         ref: 'Store'
@@ -50,21 +50,21 @@ var CustomerSchema = new Schema({
     avatar: Buffer
 });
 
-// TODO discount virtual
+// TODO
 
-ProductSchema
+CustomerSchema
 .virtual('url')
 .get(function(){
     return '/customers/' + this._id;
 });
 
-ProductSchema
+CustomerSchema
 .virtual('name')
 .get(function(){
     return this.first_name + ' ' + this.last_name;
 });
 
-ProductSchema
+CustomerSchema
 .virtual('discount')
 .get(function(){
     return 5 + Math.floor(this.sales/1000); 
@@ -72,6 +72,11 @@ ProductSchema
     The minimum discount for any customer is 5% and 1% is added for each $1000 of sales
     It will be left this way until discount rules are added
     */
+});
+
+CustomerSchema
+.pre('save', function(doc){
+
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);
