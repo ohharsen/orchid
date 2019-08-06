@@ -1,90 +1,93 @@
-.container{
- text-align: center;
-  display: flex;
-  width: 100%;
-}
-.login-side{
-    min-width: 50%; 
-    flex-grow: 1;
-    height: 100vh;
-    overflow: auto;
-  }
-  
-  .login-side h1{
-    margin: 0 auto;
-    display: block;
-    font: 37.5px Gadugi;
-    color: #100E0E;
-    margin-top: 30px;
-    opacity: 0.5;
-  }
-  
-  .login-form{
-    position: relative;
-    top: 38%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    width: 70%;
-  }
-  
-  .login-form input[type="text"]{
-    margin-bottom: 72px;
-    width: 100%;
-    border: 0;
-    border-bottom: 1px solid rgba(112, 112, 112, 0.5);
-    border-radius: 3px;
-    font: 16px Gadugi;
-    padding: 10px;
-  }
-  
-  .login-form input[type="text"]:focus{
-    outline: 0;
-    box-shadow: 0px 0px 12px #F2B2E8;
-  }
-  
-  .login-form input[type="submit"]{
-    all: unset;
-    color: white;
-    cursor: pointer;
-    margin: 0 auto;
-    width: 130px;
-    border: 0;
-    border-radius: 40px;
-    background-color:#E673D2;
-    box-shadow: 5px 5px 6px #F2B2E8;
-    font: 20px Gadugi;
-    padding: 10px;
-  }
-
-  .login-form input[type="submit"]:active{
-    box-shadow: none;
-  }
-  
-  .login-form input::placeholder{
-    color: rgba(112, 112, 112, 0.5);
-  }
-  
-  .decoration {
-    width: 50%;
-    height: 100vh; 
-    background: url('..\img\bacgkround.png');
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  @media(max-width: 480px){
-    .decoration {
-      display: none;
-    }
-  }
-  
-  .decoration h1{
-    font: 67px Lato;
-    color: #E9E8E8;
-    padding-left: 77px;
-    background: url('..\img\logo.png') no-repeat;
-    background-size: 67px 67px;
-    background-position-y: center; 
-  }
+.login-container{
+    text-align: center;
+     display: flex;
+     width: 100%;
+     background: url('..\img\bacgkround.png');
+   }
+   .login-side{
+       min-width: 50%; 
+       flex-grow: 1;
+       height: 100vh;
+       overflow: auto;
+       background: white;
+     }
+     
+     .login-side h1{
+       margin: 0 auto;
+       display: block;
+       font: 37.5px Gadugi;
+       color: #100E0E;
+       margin-top: 30px;
+       opacity: 0.5;
+     }
+     
+     .login-form{
+       position: relative;
+       top: 38%;
+       margin: 0 auto;
+       display: flex;
+       flex-direction: column;
+       width: 70%;
+     }
+     
+     .login-form input[type="text"],
+     .login-form input[type="password"]{
+       margin-bottom: 72px;
+       width: 100%;
+       border: 0;
+       border-bottom: 1px solid rgba(112, 112, 112, 0.5);
+       border-radius: 3px;
+       font: 16px Gadugi;
+       padding: 10px;
+     }
+     
+     .login-form input[type="text"]:focus,
+     .login-form input[type="password"]:focus{
+       outline: 0;
+       box-shadow: 0px 0px 12px #F2B2E8;
+     }
+     
+     .login-form input[type="submit"]{
+       all: unset;
+       color: white;
+       cursor: pointer;
+       margin: 0 auto;
+       width: 130px;
+       border: 0;
+       border-radius: 40px;
+       background-color:#E673D2;
+       box-shadow: 5px 5px 6px #F2B2E8;
+       font: 20px Gadugi;
+       padding: 10px;
+     }
+   
+     .login-form input[type="submit"]:active{
+       box-shadow: none;
+     }
+     
+     .login-form input::placeholder{
+       color: rgba(112, 112, 112, 0.5);
+     }
+     
+     .login-decoration {
+       width: 50%;
+       height: 100vh; 
+       display: flex;
+       align-items: center;
+       justify-content: center;
+     }
+     
+     @media(max-width: 480px){
+       .login-decoration {
+         display: none;
+       }
+     }
+     
+     .login-decoration h1{
+       font: 67px Lato;
+       color: #E9E8E8;
+       padding-left: 77px;
+       background: url('..\img\logo.png') no-repeat;
+       background-size: 67px 67px;
+       background-position-y: center; 
+     }

@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var session = require('express-session');
+var cors = require('cors'); 
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -31,6 +33,8 @@ var Store = require('./models/store');
 var Transactions = require('./models/transaction');
 var User = require('./models/user');
 
+// User.create({name: 'gagulik', username: 'gagushik', password: 'gagulik', role: 'Admin'});
+
 var passport = require('./config/passport');
 
 // view engine setup
@@ -42,15 +46,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'very secret secret', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'very secret secret', resave: false, saveUninitialized: false}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+})); //Debug
+
 // TODO set up session expiration
 
-app.use('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/users',
-}));
+app.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) {return res.status(403).end();}
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.status(200).end();
+    });
+  })(req, res, next);
+});
+
+app.get('/login', function(req,res,next){
+  if(req.user) return res.status(200).end();
+  return res.status(403).end();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

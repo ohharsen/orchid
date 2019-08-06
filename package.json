@@ -1,0 +1,23 @@
+{
+  "name": "orchid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd orchid-backend && npm run devstart\" \"cd orchid-frontend && npm start\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4R53N/orchid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/4R53N/orchid/issues"
+  },
+  "homepage": "https://github.com/4R53N/orchid#readme",
+  "dependencies": {
+    "concurrently": "^4.1.1"
+  }
+}

@@ -1,11 +1,11 @@
 import React from 'react';
-//import '../stylesheets/dashboard.css'
+import {Link} from 'react-router-dom';
+import '../stylesheets/dashboard.css'
 
 function DashboardComponent(props){
-
     return (
-      <div className="App">
-        <h1>Dashboard</h1>
+      <div className="container">
+        <div style={{width: "50%"}}>s</div>
       </div>
     );
   
