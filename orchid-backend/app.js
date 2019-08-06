@@ -72,6 +72,16 @@ app.get('/login', function(req,res,next){
   return res.status(403).end();
 });
 
+app.post('/logout', function(req,res,next){
+    if(req.user){
+    req.logout();
+    return res.status(200).end();
+  }
+  else{
+    res.status(500);
+  }
+})
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

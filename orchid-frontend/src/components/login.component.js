@@ -10,13 +10,12 @@ class LoginComponent extends React.Component{
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      fetching: false
     }
     this.handleLogin = this.handleLogin.bind(this);
   }
   render(){
-    if(this.props.isLoggedIn) 
-      return <Redirect to="/"/>
     return (
       <div className="login-container">
         <div className='login-side'>
@@ -40,15 +39,16 @@ class LoginComponent extends React.Component{
     var form = e.target;
     var username = this.state.username; 
     var password = this.state.password;
+    this.props.onClick({fetching: true});
     axios.post('http://localhost:3001/login', {
       username: username,
       password: password
     }).then((response) => {
       if(response.status === 200){
-        this.props.onClick({isLoggedIn: true});
+        this.props.onClick({isLoggedIn: true, fetching: false});
       }
       }).catch(err => {
-      this.props.onClick({isLoggedIn: false});
+      this.props.onClick({isLoggedIn: false, fetching: false});
     });
   }
   }

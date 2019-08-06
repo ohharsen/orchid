@@ -15,7 +15,41 @@
     height: 40px; 
     display:flex;
     align-items: center;
+    justify-content: space-between;
 }
+
+.navbar-hamburger{
+    padding-left: 30px;
+    margin-right: 50px;
+    cursor: pointer;
+}
+
+.navbar-logo{
+    margin: 0 auto;
+}
+
+.navbar-logo p{
+    font-size: 30px;
+    font-family: Segoe UI;
+    color: #707070;
+    padding-left: 30px;
+    background: url(../img/logo.png) left center no-repeat;
+    background-size: 30px 30px;
+}
+
+.navbar-logout{
+    padding: 0 35px;
+    font-size: 22px;
+    font-style: Lucida Sans Unicode;
+    color: #100E0E;
+    opacity: 0.5;
+    border-left: 1px solid;
+}
+
+.navbar-logout:hover{
+    cursor: pointer;
+}
+
 .frame-footer{
     position: fixed;
     bottom: 0;

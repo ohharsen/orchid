@@ -10,9 +10,11 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      isLoggedIn: null
+      isLoggedIn: null,
+      fetching: false
     };
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentDidMount(){
@@ -28,11 +30,11 @@ class App extends React.Component {
   render(){
     return (
     <Router>
-      {this.state.isLoggedIn === null ? <SpinnerComponent /> : ( //Show spinner until logged in status is set
+      {this.state.fetching || this.state.isLoggedIn === null ? <SpinnerComponent /> : ( //Show spinner until logged in status is set
       !this.state.isLoggedIn ?  <LoginComponent onClick={this.handleLogin} isLoggedIn={false} /> : (
       <Switch>
       <Route exact path = "/login" render={() => <Redirect from="/login" to="/"/>}/>
-      <Route exact path = "/" component={FrameComponent}/>
+      <Route exact path = "/" render={(props) => <FrameComponent {...props} onLogout={this.handleLogout}/>}/>
       </Switch>
     )
       )}
@@ -43,6 +45,10 @@ class App extends React.Component {
   handleLogin(userObj){
    this.setState(userObj);
   }
+
+  handleLogout(userObj){
+    this.setState(userObj);
+   }
 }
 
 export default App;
