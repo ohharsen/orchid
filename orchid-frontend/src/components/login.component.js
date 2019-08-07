@@ -1,7 +1,7 @@
 import React from 'react'; 
 import axios from 'axios';
 import {Redirect} from 'react-router-dom';
-import '../stylesheets/login.css';
+import '../stylesheets/login.scss';
 
 axios.defaults.withCredentials = true;
 
@@ -9,8 +9,8 @@ class LoginComponent extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      username: "",
-      password: "",
+      username: "gagulik",
+      password: "gagulik",
       fetching: false
     }
     this.handleLogin = this.handleLogin.bind(this);
@@ -40,7 +40,7 @@ class LoginComponent extends React.Component{
     var username = this.state.username; 
     var password = this.state.password;
     this.props.onClick({fetching: true});
-    axios.post('http://localhost:3001/login', {
+    axios.post('http://localhost:3001/users/login', {
       username: username,
       password: password
     }).then((response) => {

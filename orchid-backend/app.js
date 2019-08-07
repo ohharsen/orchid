@@ -56,32 +56,6 @@ app.use(cors({
 
 // TODO set up session expiration
 
-app.post('/login', function(req, res, next) {
-  passport.authenticate('local', function(err, user, info) {
-    if (err) { return next(err); }
-    if (!user) {return res.status(403).end();}
-    req.logIn(user, function(err) {
-      if (err) { return next(err); }
-      return res.status(200).end();
-    });
-  })(req, res, next);
-});
-
-app.get('/login', function(req,res,next){
-  if(req.user) return res.status(200).end();
-  return res.status(403).end();
-});
-
-app.post('/logout', function(req,res,next){
-    if(req.user){
-    req.logout();
-    return res.status(200).end();
-  }
-  else{
-    res.status(500);
-  }
-})
-
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

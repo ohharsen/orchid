@@ -15,10 +15,12 @@
     height: 40px; 
     display:flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .navbar-hamburger{
+    position: absolute;
+    left: 0;
     padding-left: 30px;
     margin-right: 50px;
     cursor: pointer;
@@ -38,9 +40,11 @@
 }
 
 .navbar-logout{
+    position: absolute;
+    right: 0;
     padding: 0 35px;
     font-size: 22px;
-    font-style: Lucida Sans Unicode;
+    font-family: "Lucida Sans Unicode";
     color: #100E0E;
     opacity: 0.5;
     border-left: 1px solid;

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../stylesheets/frame.css';
+import '../stylesheets/frame.scss';
 import HamburgerMenu from 'react-hamburger-menu';
 import axios from 'axios';
 import {Redirect} from 'react-router-dom';
@@ -25,7 +25,7 @@ export default class FrameComponent extends React.Component{
     
     handleLogout(){
         this.props.onLogout({fetching: true});
-        axios.post('http://localhost:3001/logout').then((response)=>{
+        axios.post('http://localhost:3001/users/logout').then((response)=>{
             if(response.status === 200){
                 console.log(this.props);
                 this.props.onLogout({isLoggedIn: false, fetching: false});

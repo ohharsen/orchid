@@ -18,7 +18,7 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    axios.get('http://localhost:3001/login').then((response) => {
+    axios.get('http://localhost:3001/users/').then((response) => {
       if(response.status === 200){
         this.setState({isLoggedIn: true});
       }
