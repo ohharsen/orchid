@@ -15,7 +15,11 @@ router.post('/login', function(req, res, next) {
 });
 
 router.get('/', function(req,res,next){
-  if(req.user) return res.status(200).end();
+  if(req.user){ 
+    let user = req.user;
+    delete user.password;
+    return res.status(200).send({user: user});
+}
   return res.status(403).end();
 });
 

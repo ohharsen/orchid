@@ -1,9 +1,13 @@
+$sidebar-width: 25vw;
+@media (max-width: 480px){
+    $sidebar-width: 90vw;
+}
 .frame-container{
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background: url('..\img\bacgkround.png') no-repeat;
+    background: url(../img/bacgkround.png) no-repeat;
     background-size: cover; 
 }
 .frame-navbar{
@@ -43,7 +47,7 @@
     position: absolute;
     right: 0;
     padding: 0 35px;
-    font-size: 22px;
+    font-size: 18px;
     font-family: "Lucida Sans Unicode";
     color: #100E0E;
     opacity: 0.5;
@@ -52,6 +56,143 @@
 
 .navbar-logout:hover{
     cursor: pointer;
+}
+
+.sidebar{
+    box-sizing: border-box;
+    position: absolute;
+    left: -($sidebar-width);
+    z-index: 1;
+    width: $sidebar-width;
+    min-height: 100vh;
+    background: #1F1F1F;
+    border-right: 0.8px solid #707070;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: start;
+}
+
+.sidebar-header{
+    min-height: 17vh;
+    background: #EF60A3; 
+} 
+
+.sidebar-user{
+     display: flex;
+     flex-direction: column;
+     justify-content: center; 
+     position: relative;
+     box-sizing: border-box;
+     padding-left: 100px;
+     margin: 0;
+     width: 200px;
+     left: 10%;
+     top: 2vh;
+     height: 80px;
+     background: url(../img/svg/user-svgrepo-com.svg) no-repeat 80px 80px;
+     background-position: left top;
+     color:white;
+     font-family: 'Courier New Header';
+     h1{
+         margin: 0;
+         font-size: 1.5em;
+         width: 0px;
+     }
+     h2{
+         margin: 0;
+         font-size: 1em;
+         width: 0px;
+     }
+}
+
+.sidebar-link{
+    display: block;
+    height: 9vh;
+    border:0;
+    border-bottom: 1px solid #707070; 
+    box-sizing: border-box;
+    font-size: 22px;
+    font-family: Lato;
+    padding: 15px 2em;
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar-link:last-of-type{
+    display: "none";
+}
+.open{
+    animation-name: open;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+}
+
+.close{
+    animation-name: close;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+}
+
+@keyframes open{
+    0%{
+        transform: translate(0,0);
+    }
+    100%{
+        transform: translate(($sidebar-width), 0);
+    }
+}
+
+@keyframes close{
+    0%{
+        transform: translate(($sidebar-width),0);
+    }
+    100%{
+        transform: translate(0, 0);
+    }
+}
+
+@media (max-width: 481px){
+    .sidebar{
+        width: 90vw;
+        left: -90vw;
+    }
+    .navbar-hamburger{
+        padding: 0 10px;
+    }
+    .navbar-logout{
+        display: none;
+    }
+    .sidebar-link:last-of-type{
+        display: block;
+    }
+    @keyframes open{
+        0%{
+            transform: translate(0,0);
+        }
+        100%{
+            transform: translate(90vw, 0);
+        }
+    }
+    
+    @keyframes close{
+        0%{
+            transform: translate(90vw,0);
+        }
+        100%{
+            transform: translate(0, 0);
+        }
+    }
+}
+
+main{
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 0;
+    right: 0;
 }
 
 .frame-footer{
@@ -65,6 +206,8 @@
     justify-content: center;
     align-items:center;
 }
+
+
 
 .github-link{
     padding-left: 22px;

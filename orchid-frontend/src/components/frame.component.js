@@ -2,7 +2,7 @@ import React from 'react';
 import '../stylesheets/frame.scss';
 import HamburgerMenu from 'react-hamburger-menu';
 import axios from 'axios';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 
 export default class FrameComponent extends React.Component{
     constructor(props){
@@ -16,7 +16,12 @@ export default class FrameComponent extends React.Component{
 
     handleClick() {
         if(this.state.open){
-            //TODO Open and close the menu
+            document.querySelector('.navbar-hamburger').className = 'navbar-hamburger close';
+            document.querySelector('.sidebar').className = 'sidebar close';
+        }
+        else{
+            document.querySelector('.navbar-hamburger').classList = 'navbar-hamburger open';
+            document.querySelector('.sidebar').className = 'sidebar open';
         }
         this.setState({
             open: !this.state.open
@@ -44,9 +49,9 @@ export default class FrameComponent extends React.Component{
                 <HamburgerMenu
                     isOpen={this.state.open}
                     menuClicked={this.handleClick}
-                    width={18}
+                    width={25}
                     height={15}
-                    strokeWidth={2}
+                    strokeWidth={3}
                     rotate={0}
                     color='#707070'
                     borderRadius={800}
@@ -60,7 +65,22 @@ export default class FrameComponent extends React.Component{
                 Logout
             </div>
         </nav>
-        <main>
+        <aside className="sidebar">
+            <div className="sidebar-header">
+                <div className="sidebar-user">
+                    <h1>{this.props.user.name}</h1>
+                    <h2>{this.props.user.role}</h2>
+                </div>
+            </div>
+            <Link to="/" className="sidebar-link">Dashboard</Link>
+            <Link to="/checkout" className="sidebar-link">Checkout</Link>
+            <Link to="/inventory" className="sidebar-link">Inventory</Link>
+            <Link to="/customers" className="sidebar-link">Customers</Link>
+            <Link to="/reports" className="sidebar-link">Reports</Link>
+            <Link to="/settings" className="sidebar-link">Settings</Link>
+            <a onClick={this.handleLogout}  className="sidebar-link">Logout</a>
+        </aside>
+        <main className="frame-main">
             {this.props.children}
         </main>
         <footer className="frame-footer">

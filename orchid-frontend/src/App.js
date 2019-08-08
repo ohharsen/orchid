@@ -7,11 +7,12 @@ import FrameComponent from './components/frame.component';
 import SpinnerComponent from './components/spinner.component';
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props){ 
     super(props);
     this.state = {
       isLoggedIn: null,
-      fetching: false
+      fetching: false,
+      user: null
     };
     this.handleLogin = this.handleLogin.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -20,10 +21,11 @@ class App extends React.Component {
   componentDidMount(){
     axios.get('http://localhost:3001/users/').then((response) => {
       if(response.status === 200){
-        this.setState({isLoggedIn: true});
+        this.setState({isLoggedIn: true, user: response.data.user});
+        console.log(response.data.user);
       }
       }).catch(err => {
-      this.setState({isLoggedIn: false});
+      this.setState({isLoggedIn: false, user: null});
     });
   }
 
@@ -32,10 +34,12 @@ class App extends React.Component {
     <Router>
       {this.state.fetching || this.state.isLoggedIn === null ? <SpinnerComponent /> : ( //Show spinner until logged in status is set
       !this.state.isLoggedIn ?  <LoginComponent onClick={this.handleLogin} isLoggedIn={false} /> : (
-      <Switch>
-      <Route exact path = "/login" render={() => <Redirect from="/login" to="/"/>}/>
-      <Route exact path = "/" render={(props) => <FrameComponent {...props} onLogout={this.handleLogout}/>}/>
-      </Switch>
+      <FrameComponent onLogout={this.handleLogout} user={this.state.user}>
+        <Switch>
+          <Route exact path = "/login" render={() => <Redirect from="/login" to="/"/>}/>
+          <Route exact path = "/" component={DashboardComponent}/>
+        </Switch>
+      </FrameComponent>
     )
       )}
     </Router>
