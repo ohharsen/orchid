@@ -21,11 +21,11 @@ class App extends React.Component {
   componentDidMount(){
     axios.get('http://localhost:3001/users/').then((response) => {
       if(response.status === 200){
-        this.setState({isLoggedIn: true, user: response.data.user});
+        this.setState({isLoggedIn: true, user: response.data.user, fetching: false});
         console.log(response.data.user);
       }
       }).catch(err => {
-      this.setState({isLoggedIn: false, user: null});
+      this.setState({isLoggedIn: false, user: null, fetching: false});
     });
   }
 

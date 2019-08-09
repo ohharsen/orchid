@@ -49,8 +49,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'very secret secret', resave: false, saveUninitialized: false}));
 app.use(passport.initialize());
 app.use(passport.session());
+var whitelist = ['http://localhost:3000', 'http://172.20.10.1']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+};
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: corsOptions.origin,
   credentials: true,
 })); //Debug
 

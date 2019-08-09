@@ -12,6 +12,7 @@ export default class FrameComponent extends React.Component{
         }
         this.handleClick = this.handleClick.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+       
     }
 
     handleClick() {
@@ -72,13 +73,13 @@ export default class FrameComponent extends React.Component{
                     <h2>{this.props.user.role}</h2>
                 </div>
             </div>
-            <Link to="/" className="sidebar-link">Dashboard</Link>
-            <Link to="/checkout" className="sidebar-link">Checkout</Link>
-            <Link to="/inventory" className="sidebar-link">Inventory</Link>
-            <Link to="/customers" className="sidebar-link">Customers</Link>
-            <Link to="/reports" className="sidebar-link">Reports</Link>
-            <Link to="/settings" className="sidebar-link">Settings</Link>
-            <a onClick={this.handleLogout}  className="sidebar-link">Logout</a>
+            <Link to="/" className="sidebar-link" onClick={this.handleClick}>Dashboard</Link>
+            <Link to="/checkout" className="sidebar-link" onClick={this.handleClick}>Checkout</Link>
+            <Link to="/inventory" className="sidebar-link" onClick={this.handleClick}>Inventory</Link>
+            <Link to="/customers" className="sidebar-link" onClick={this.handleClick}>Customers</Link>
+            <Link to="/reports" className="sidebar-link" onClick={this.handleClick}>Reports</Link>
+            <Link to="/settings" className="sidebar-link" onClick={this.handleClick}>Settings</Link>
+            <Link to="" onClick={this.handleLogout}  className="sidebar-link">Logout</Link>
         </aside>
         <main className="frame-main">
             {this.props.children}
