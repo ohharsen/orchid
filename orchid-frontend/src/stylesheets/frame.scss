@@ -22,6 +22,7 @@ $sidebar-width: 25vw;
     display:flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 0.5px solid #707070;
 }
 
 .navbar-hamburger{
@@ -121,6 +122,10 @@ $sidebar-width: 25vw;
     color: white;
 }
 
+.sidebar-link:active{
+    background: #707070;
+}
+
 .sidebar-link:last-of-type{
     display: "none";
 }
@@ -207,6 +212,7 @@ main{
     display: flex;
     justify-content: center;
     align-items:center;
+    border-top: 0.5px solid #707070;
 }
 
 

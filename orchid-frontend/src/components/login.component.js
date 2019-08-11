@@ -9,9 +9,8 @@ class LoginComponent extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      username: "gagulik",
-      password: "gagulik",
-      fetching: false
+      username: "gagueik",
+      password: "gagulik"
     }
     this.handleLogin = this.handleLogin.bind(this);
   }
@@ -39,16 +38,16 @@ class LoginComponent extends React.Component{
     var form = e.target;
     var username = this.state.username; 
     var password = this.state.password;
-    this.props.onClick({fetching: true});
+    this.props.handleFetching(true);
     axios.post('http://localhost:3001/users/login', {
       username: username,
       password: password
     }).then((response) => {
       if(response.status === 200){
-        this.props.onClick({isLoggedIn: true, fetching: false});
+        this.props.handleLogin(true, false);
       }
       }).catch(err => {
-      this.props.onClick({isLoggedIn: false, fetching: false});
+      this.props.handleLogin(false,  false);
     });
   }
   }

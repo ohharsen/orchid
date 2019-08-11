@@ -7,11 +7,26 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var cors = require('cors'); 
 
+var Product = require('./models/product');
+var Category = require('./models/category');
+var Customer = require('./models/customer');
+var Store = require('./models/store');
+var Transactions = require('./models/transaction');
+var User = require('./models/user');
+
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var inventoryRouter = require('./routes/inventory');
 
 var app = express();
 
+Product.create({
+  name: 'shorik',
+  sku: 'dadasd',
+  price: 500,
+  quantities: [{quantity: 5}]
+});
 
 // set up the DB
 var mongoDB = 'mongodb+srv://orchidUser:orchidPassword@cluster0-lthzs.mongodb.net/test?retryWrites=true&w=majority';
@@ -26,14 +41,15 @@ db.on('error', function(err, result){
   console.log(err);
 });
 
-var Product = require('./models/product');
-var Category = require('./models/category');
-var Customer = require('./models/customer');
-var Store = require('./models/store');
-var Transactions = require('./models/transaction');
-var User = require('./models/user');
-
 // User.create({name: 'gagulik', username: 'gagushik', password: 'gagulik', role: 'Admin'});
+// Store.create({name: 'bessini'}, function(err, store){
+//   console.log(store);
+//   User.create({name: 'gagulik', username: 'gagueik', password: 'gagulik', role: 'Admin', stores: store._id}, function(err, user){
+//     Product.create({name: 'yubochka', sku: '1121512', price: 1500, quantities: [{store: store.id, quantity: 5}]}, function(err, result){
+//       console.log(err);
+//     })
+//   });
+// });
 
 var passport = require('./config/passport');
 
@@ -68,6 +84,7 @@ app.use(cors({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/inventory', inventoryRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

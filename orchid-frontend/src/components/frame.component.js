@@ -2,7 +2,7 @@ import React from 'react';
 import '../stylesheets/frame.scss';
 import HamburgerMenu from 'react-hamburger-menu';
 import axios from 'axios';
-import {Redirect, Link} from 'react-router-dom';
+import {Redirect, NavLink} from 'react-router-dom';
 
 export default class FrameComponent extends React.Component{
     constructor(props){
@@ -30,11 +30,10 @@ export default class FrameComponent extends React.Component{
     }
     
     handleLogout(){
-        this.props.onLogout({fetching: true});
+        this.props.handleFetching(true);
         axios.post('http://localhost:3001/users/logout').then((response)=>{
             if(response.status === 200){
-                console.log(this.props);
-                this.props.onLogout({isLoggedIn: false, fetching: false});
+                this.props.onLogout( false,  false);
             }
             else{
                 //TODO error
@@ -69,17 +68,17 @@ export default class FrameComponent extends React.Component{
         <aside className="sidebar">
             <div className="sidebar-header">
                 <div className="sidebar-user">
-                    <h1>{this.props.user.name}</h1>
-                    <h2>{this.props.user.role}</h2>
+                    <h1>{this.props.user ? this.props.user.name: 'user'}</h1>
+                    <h2>{this.props.user ? this.props.user.role: 'role'}</h2>
                 </div>
             </div>
-            <Link to="/" className="sidebar-link" onClick={this.handleClick}>Dashboard</Link>
-            <Link to="/checkout" className="sidebar-link" onClick={this.handleClick}>Checkout</Link>
-            <Link to="/inventory" className="sidebar-link" onClick={this.handleClick}>Inventory</Link>
-            <Link to="/customers" className="sidebar-link" onClick={this.handleClick}>Customers</Link>
-            <Link to="/reports" className="sidebar-link" onClick={this.handleClick}>Reports</Link>
-            <Link to="/settings" className="sidebar-link" onClick={this.handleClick}>Settings</Link>
-            <Link to="" onClick={this.handleLogout}  className="sidebar-link">Logout</Link>
+            <NavLink to="/" className="sidebar-link" onClick={this.handleClick}>Dashboard</NavLink>
+            <NavLink to="/checkout" className="sidebar-link" onClick={this.handleClick}>Checkout</NavLink>
+            <NavLink to="/inventory" className="sidebar-link" onClick={this.handleClick}>Inventory</NavLink>
+            <NavLink to="/customers" className="sidebar-link" onClick={this.handleClick}>Customers</NavLink>
+            <NavLink to="/reports" className="sidebar-link" onClick={this.handleClick}>Reports</NavLink>
+            <NavLink to="/settings" className="sidebar-link" onClick={this.handleClick}>Settings</NavLink>
+            <a href="" onClick={this.handleLogout}  className="sidebar-link">Logout</a>
         </aside>
         <main className="frame-main">
             {this.props.children}
