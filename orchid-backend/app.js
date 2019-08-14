@@ -21,13 +21,6 @@ var inventoryRouter = require('./routes/inventory');
 
 var app = express();
 
-Product.create({
-  name: 'shorik',
-  sku: 'dadasd',
-  price: 500,
-  quantities: [{quantity: 5}]
-});
-
 // set up the DB
 var mongoDB = 'mongodb+srv://orchidUser:orchidPassword@cluster0-lthzs.mongodb.net/test?retryWrites=true&w=majority';
 mongoose.connect(mongoDB, {useNewUrlParser: true, useCreateIndex: true});
@@ -38,18 +31,17 @@ var db = mongoose.connection;
 
 // debug - DB error
 db.on('error', function(err, result){
-  console.log(err);
+  if(err) throw(err);
 });
 
-// User.create({name: 'gagulik', username: 'gagushik', password: 'gagulik', role: 'Admin'});
-// Store.create({name: 'bessini'}, function(err, store){
-//   console.log(store);
-//   User.create({name: 'gagulik', username: 'gagueik', password: 'gagulik', role: 'Admin', stores: store._id}, function(err, user){
-//     Product.create({name: 'yubochka', sku: '1121512', price: 1500, quantities: [{store: store.id, quantity: 5}]}, function(err, result){
-//       console.log(err);
-//     })
-//   });
-// });
+Store.find({name: 'bessini'}, function(err, store){
+  //console.log(store[0]._id);
+  User.find({name: 'gagulik', username: 'gagueik', password: 'gagulik', role: 'Admin', stores: store[0]._id}, function(err, user){
+    Product.create({name: 'yubochka', sku: '1121512', price: 1500, quantities: [{store: store[store.length-1]._id, quantity: 5}]}, function(err, result){
+      console.log(err);
+    })
+  });
+});
 
 var passport = require('./config/passport');
 

@@ -19,4 +19,19 @@ router.get('/', function(req,res,next){
     }
 });
 
+router.delete('/:id', function(req, res, next){
+    if(req.user){
+        var stores = req.user.stores.map(function(val){
+            return val._id;
+        });
+        Product
+        .findByIdAndRemove(req.params.id, function(err){
+            if(err) console.log(err);
+    });
+    }
+    else{
+        return res.status(403).end();
+    }
+});
+
 module.exports = router;

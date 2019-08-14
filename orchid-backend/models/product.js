@@ -24,7 +24,7 @@ var ProductSchema = new Schema({
         store: {
             type: Schema.Types.ObjectId, 
             ref: 'Store', 
-            //required: true
+            required: true
         },
         quantity: {
             type: Number, 

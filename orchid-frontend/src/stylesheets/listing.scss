@@ -3,10 +3,10 @@
     border: none;
     border-radius: 5px;
     box-shadow: 5px 5px 6px rgba(0,0,0,0.16);
-    padding: 0rem 2rem;
+    padding: 0;
     align-items: center;
-    justify-content: space-between;
-    margin: 16px auto;
+    justify-content: space-around;
+    margin: 7px auto;
     width: 80%;
     text-decoration: none;
     background: white;
@@ -35,10 +35,19 @@
         background-size: 30px;
         border: none;
     }
+    p{
+        margin: 0;
+    }
+    @media (max-width: 450px){
+        p{
+            font-size: 0.8em;
+        }
+    }
 }
 
 .button-list{
     list-style: none;
+    padding: 0;
 }
 
 .listing-button:hover,
