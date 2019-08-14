@@ -43,7 +43,7 @@ export default class InventoryComponent extends React.Component{
     return (this.state.fetching? <SpinnerComponent /> : (
         <div className="inventory-container">
             <ul className="button-list">
-            {this.state.products.map((val)=><li><ProductButtonComponent>{val.name} {val.sku} {val.price}</ProductButtonComponent></li>)}
+            {this.state.products.map((val)=><li><ProductButtonComponent product={val}/></li>)}
             </ul>
             </div>
     ));
@@ -66,8 +66,11 @@ function ProductButtonComponent(props){
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}>
         <input type="checkbox" onClick={handleCheck} onMouseDown={handleCheck} onMouseUp={handleCheck}/>
-        <h1></h1>
-        {props.children}
+        <p>{props.product.name}</p>
+        <p>{props.product.sku}</p>
+        <p>{props.product.price}</p>
+        <p>{/*props.product.quantites.reduce((acc, val) => acc+val.quantity)*/}</p>
+        <p>{props.product.cost}</p>
         </div> 
     );
 }
