@@ -31,7 +31,7 @@ class App extends React.Component {
   }
 
   render(){
-    return (
+    return ( 
     <Router>
       {this.state.fetching || this.state.isLoggedIn === null ? <SpinnerComponent /> : ( //Show spinner until logged in status is set
       !this.state.isLoggedIn ?  <LoginComponent handleLogin={this.handleLogin} handleFetching={this.handleFetching} isLoggedIn={false} /> : (
