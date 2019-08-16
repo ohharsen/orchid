@@ -2,7 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
+import '../stylesheets/inventory.scss';
 import productSVG from '../img/svg/product.svg';
+import async from 'async';
 
 export default class InventoryComponent extends React.Component{
     constructor(props){
@@ -11,6 +13,7 @@ export default class InventoryComponent extends React.Component{
             products: [],
             fetching: true,
             searchString: '',
+            isAddingProduct: false,
             filters: {
                 minPrice: null,
                 maxPrice: null,
@@ -22,6 +25,8 @@ export default class InventoryComponent extends React.Component{
         }  
         this.componentDidMount=this.componentDidMount.bind(this);
         this.handleCheck = this.handleCheck.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleAddProduct = this.handleAddProduct.bind(this);
     }
     componentDidMount(){
         axios.get('http://localhost:3001/inventory/').then((response) => {
@@ -46,18 +51,33 @@ export default class InventoryComponent extends React.Component{
     }
     //TODO handle delete
     handleDelete(e){
-        axios.delete('http://localhost:3001/inventory/'+e.target.parentNode.lastChild.value)
-        .then(response => console.log(this.state))
-        .catch(err => console.log(err));
+        var prods = this.state.products.filter((val) => val.checked).map((val) => val._id);
+        if(prods.length === 0) return;
+         this.setState({fetching: true});
+          axios.delete('http://localhost:3001/inventory/', {data: {products: prods}})
+          .then((response) => {
+            this.setState({products: response.data, fetching: false});
+            })
+          .catch(err => console.log(err));
+    }
+
+    handleAddProduct(){
+        this.setState({isAddingProduct: !this.state.isAddingProduct});
     }
 
     render(){
     return (this.state.fetching? <SpinnerComponent /> : (
         <div className="inventory-container">
+            <h1>INVENTORY</h1>
             <ul className="button-list">
             {this.state.products.map((val)=><li key={val._id}><ProductButtonComponent product={val} handleCheck={this.handleCheck}/></li>)}
             </ul>
+            <div className="button-bar">
+            <button id="delete" onClick={this.handleDelete}>Delete</button>
+            <button id="add" onClick={this.handleAddProduct}>Add Product</button>
             </div>
+            {this.state.isAddingProduct ? <ProductDetailOverlay exit={this.handleAddProduct}/> : null}
+        </div>
     ));
     }
 }
@@ -90,6 +110,19 @@ function ProductButtonComponent(props){
     );
 }
 
-function ProductDetailComponent(props){
+function ProductDetailOverlay(props){
+    return(
+        <div onClick={props.exit} className='backdrop'>
+            <ProductDetail />
+        </div>
+    );
+}
 
+function ProductDetail(props){
+    return(
+    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
+
+
+    </div>
+    );
 }

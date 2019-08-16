@@ -34,14 +34,14 @@ db.on('error', function(err, result){
   if(err) throw(err);
 });
 
-Store.find({name: 'bessini'}, function(err, store){
-  //console.log(store[0]._id);
-  User.find({name: 'gagulik', username: 'gagueik', password: 'gagulik', role: 'Admin', stores: store[0]._id}, function(err, user){
-    Product.create({name: 'yubochka', sku: '1121512', price: 1500, quantities: [{store: store[store.length-1]._id, quantity: 5}]}, function(err, result){
-      console.log(err);
-    })
-  });
-});
+// Store.find({name: 'bessini'}, function(err, store){
+//   //console.log(store[0]._id);
+//   User.find({name: 'gagulik', username: 'gagueik', password: 'gagulik', role: 'Admin', stores: store[0]._id}, function(err, user){
+//     Product.create({name: 'yubochka', sku: '1121512', price: 1500, quantities: [{store: store[store.length-1]._id, quantity: 5}]}, function(err, result){
+//       console.log(err);
+//     })
+//   });
+// });
 
 var passport = require('./config/passport');
 

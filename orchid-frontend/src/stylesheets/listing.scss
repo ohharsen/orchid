@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: space-around;
     margin: 7px auto;
-    width: 80%;
+    width: 95%;
     text-decoration: none;
     background: white;
     color: #707070;
@@ -47,6 +47,8 @@
 
 .button-list{
     list-style: none;
+    overflow: auto;
+    height: 60vh;
     padding: 0;
 }
 
@@ -57,4 +59,75 @@
 
 .clicked {
     box-shadow: none;
+}
+
+.button-bar{
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    bottom: 50px; 
+}
+
+#delete{
+        margin-right: 3%;
+        appearance: none;
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        background: #707070;
+        color:white;
+        box-shadow: none;
+        border: none;
+        width: 150px;
+        line-height: 2;
+        font-family: Lato;
+        font-size: 20px;
+        border-radius: 10px;
+        box-shadow: 3px 3px 6px #00000016;
+    }
+#delete:active{
+    background: #606060;
+}
+
+#add{
+    margin-right: 3%;
+        appearance: none;
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        background: #FA73E4;
+        color:white;
+        box-shadow: none;
+        border: none;
+        width: 150px;
+        line-height: 2;
+        font-family: Lato;
+        font-size: 20px;
+        border-radius: 10px;
+        box-shadow: 3px 3px 6px #00000016;
+}
+
+#add:active{
+    background: rgb(247, 86, 220);
+}
+
+.backdrop{
+    background: #00000040;
+    position: absolute;
+    z-index: 2;
+    left: 0; 
+    top: 0;
+    right: 0;
+    bottom: 0
+}
+
+.detail-div{
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    max-width: 900px;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 10px;
 }
