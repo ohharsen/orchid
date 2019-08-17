@@ -3,6 +3,7 @@ import axios from 'axios';
 import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/inventory.scss';
+import '../stylesheets/detail.scss';
 import productSVG from '../img/svg/product.svg';
 import async from 'async';
 
@@ -27,6 +28,7 @@ export default class InventoryComponent extends React.Component{
         this.handleCheck = this.handleCheck.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddProduct = this.handleAddProduct.bind(this);
+        this.toggleDetail = this.toggleDetail.bind(this);
     }
     componentDidMount(){
         axios.get('http://localhost:3001/inventory/').then((response) => {
@@ -61,8 +63,13 @@ export default class InventoryComponent extends React.Component{
           .catch(err => console.log(err));
     }
 
-    handleAddProduct(){
+    handleAddProduct(e){
+        e.prevenetDefault();
+    }
+
+    toggleDetail(){
         this.setState({isAddingProduct: !this.state.isAddingProduct});
+        axios.get('http://localhost:3001/inventory/new');
     }
 
     render(){
@@ -74,12 +81,30 @@ export default class InventoryComponent extends React.Component{
             </ul>
             <div className="button-bar">
             <button id="delete" onClick={this.handleDelete}>Delete</button>
-            <button id="add" onClick={this.handleAddProduct}>Add Product</button>
+            <button className="submit-button" onClick={this.toggleDetail}>Add Product</button>
             </div>
-            {this.state.isAddingProduct ? <ProductDetailOverlay exit={this.handleAddProduct}/> : null}
+            {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> <ProductDetail buttonText="ADD" /></div> : null}
         </div>
     ));
     }
+}
+
+function ProductDetail(props){
+    return(
+    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
+        <form onSubmit={props.onClick}>
+            <div className="detail-top-bar">
+                s
+                <div className="detail-info-fields">
+                    
+                </div>
+            </div>
+            <div className="detail-submit-bar">
+                <input type="submit" value={props.buttonText} className="submit-button"/>   
+            </div>
+         </form>
+    </div>
+    );
 }
 
 function ProductButtonComponent(props){
@@ -107,22 +132,5 @@ function ProductButtonComponent(props){
         <p>{props.product.sku}</p>
         <input id='productID' type='hidden' value={props.product._id}/>
         </div> 
-    );
-}
-
-function ProductDetailOverlay(props){
-    return(
-        <div onClick={props.exit} className='backdrop'>
-            <ProductDetail />
-        </div>
-    );
-}
-
-function ProductDetail(props){
-    return(
-    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
-
-
-    </div>
     );
 }

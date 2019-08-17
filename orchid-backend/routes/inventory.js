@@ -2,6 +2,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var async = require('async');
 var Product = mongoose.model('Product');
+var User = mongoose.model('User');
+var Category = mongoose.model('Category');
 var router = express.Router();
 
 router.get('/', function(req,res,next){
@@ -20,8 +22,25 @@ router.get('/', function(req,res,next){
     }
 });
 
+router.post('/new', function(req, res, next){
+    Product.create(req.body.product, function(err){
+        res.err(err);
+    })
+    
+});
+
+router.get('/new',function(req, res, next){
+    User.findById(req.user._id)
+    .populate('stores')
+    .exec(function(err, stores){
+        Category.find()
+        .exec(function(err, categories){
+            res.send({stores: stores, categories: categories});
+        });
+    })
+});
+
 router.delete('/', async function(req, res, next){
-    if(req.user){
         async.each(req.body.products, function(item, cb){
             Product
             .findByIdAndRemove(item, function(err){
@@ -38,20 +57,7 @@ router.delete('/', async function(req, res, next){
             .exec(function(err, products){
                 res.send(products).end();
             });
-        })
-    }
-    else{
-        return res.status(403).end();
-    }
+        });
 });
-
- function deleteProduct(prodID){
-   
-    Product
-    .findByIdAndRemove(prodID, function(err){
-        if(err) reject(err);
-        resolve(true);
-    })
-}
 
 module.exports = router;

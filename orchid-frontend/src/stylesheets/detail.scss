@@ -1,0 +1,40 @@
+.detail-div{
+    padding: 5%;
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    max-width: 900px;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 10px;
+    form{
+        height: 100%;
+    }
+    .detail-submit-bar{
+        box-sizing: border-box;
+        width: 90%;
+        position: fixed;
+        left: 4%; 
+        height:10%;
+        bottom: 10px;
+        display:flex;
+        justify-content: flex-end;
+        padding: 10px;
+        border-top: 1px solid #707070;
+    }
+
+    .detail-top-bar{
+        overflow: auto;
+        height: 90%;
+        .detail-info-fields{
+            input[type="text"]{
+                border: 1px solid #707070;
+                border-radius: 5px;
+            }
+        }
+    }
+}
+

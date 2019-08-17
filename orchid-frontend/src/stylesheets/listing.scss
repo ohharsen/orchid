@@ -48,7 +48,7 @@
 .button-list{
     list-style: none;
     overflow: auto;
-    height: 60vh;
+    height: 55vh;
     padding: 0;
 }
 
@@ -88,7 +88,7 @@
     background: #606060;
 }
 
-#add{
+.submit-button{
     margin-right: 3%;
         appearance: none;
         -webkit-appearance:none;
@@ -105,7 +105,7 @@
         box-shadow: 3px 3px 6px #00000016;
 }
 
-#add:active{
+.submit-button:active{
     background: rgb(247, 86, 220);
 }
 
@@ -117,17 +117,4 @@
     top: 0;
     right: 0;
     bottom: 0
-}
-
-.detail-div{
-    position: absolute;
-    z-index: 3;
-    left: 50%;
-    top: 50%;
-    width: 60%;
-    max-width: 900px;
-    height: 80%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
 }
