@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
@@ -27,7 +27,6 @@ export default class InventoryComponent extends React.Component{
         this.componentDidMount=this.componentDidMount.bind(this);
         this.handleCheck = this.handleCheck.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.handleAddProduct = this.handleAddProduct.bind(this);
         this.toggleDetail = this.toggleDetail.bind(this);
     }
     componentDidMount(){
@@ -51,7 +50,7 @@ export default class InventoryComponent extends React.Component{
         stateBuf.products[index].checked = !stateBuf.products[index].checked;
         this.setState(stateBuf);
     }
-    //TODO handle delete
+    
     handleDelete(e){
         var prods = this.state.products.filter((val) => val.checked).map((val) => val._id);
         if(prods.length === 0) return;
@@ -63,9 +62,7 @@ export default class InventoryComponent extends React.Component{
           .catch(err => console.log(err));
     }
 
-    handleAddProduct(e){
-        e.prevenetDefault();
-    }
+    
 
     toggleDetail(){
         this.setState({isAddingProduct: !this.state.isAddingProduct});
@@ -83,29 +80,103 @@ export default class InventoryComponent extends React.Component{
             <button id="delete" onClick={this.handleDelete}>Delete</button>
             <button className="submit-button" onClick={this.toggleDetail}>Add Product</button>
             </div>
-            {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> <ProductDetail buttonText="ADD" /></div> : null}
+            {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> <ProductDetail/></div> : null}
         </div>
     ));
     }
 }
 
 function ProductDetail(props){
+    const [newProduct, setNewProduct] = useState(0);
+    function handleAddProduct(e){
+        e.preventDefault();
+    }
+    function handleImageUpload(file){
+        let {image, ...olState} = newProduct; 
+        setNewProduct({
+            ...olState,
+            image: file
+        });
+    }
     return(
     <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
-        <form onSubmit={props.onClick}>
             <div className="detail-top-bar">
-                s
-                <div className="detail-info-fields">
-                    
-                </div>
+                <DetailInfoFields/>
+                <ImageUpload imageFile={newProduct.image || ''} updateImage={handleImageUpload}/>
             </div>
             <div className="detail-submit-bar">
-                <input type="submit" value={props.buttonText} className="submit-button"/>   
+                <input type="submit" onClick={handleAddProduct} value='ADD' className="submit-button"/>   
             </div>
-         </form>
     </div>
     );
 }
+
+function SumbitBar(props){
+
+}
+
+function DetailInfoFields(props){
+    return(
+        <div className="detail-info-fields">
+            <label for='name'>Name</label>
+            <input type="text" id="name" style={{width: '100%'}} value={props.product ? props.product.name : ''}/>
+            <label for='sku'>SKU</label>
+            <input type="text" id="sku" style={{width: '100%'}} value={props.product ? props.product.sku : ''}/>
+            <label for='price'>Price</label>
+            <input type="number" id="price"min={0} step={0.01} style={{width: '30%'}} value={props.product && props.product.price}/>
+        </div>
+    );
+}
+
+function ImageUpload(props) {
+    let urls = new WeakMap()
+
+    let blobUrl = blob => {
+      if (urls.has(blob)) {
+        return urls.get(blob)
+      } else {
+        let url = URL.createObjectURL(blob)
+        urls.set(blob, url)
+        return url
+      }
+    }
+
+    
+    
+    let onDrag = event => {
+        event.preventDefault();
+      }
+    
+    let onDrop = event => {
+        event.preventDefault();
+        let file = event.dataTransfer.files[0];
+        props.updateImage(file);
+    }
+
+    let onClick = event => {
+        event.stopPropagation();
+        if(event.target.tagName=='DIV')
+            event.target.lastChild.click();
+        else if(event.target.tagName=='IMG')
+            event.target.parentNode.lastChild.click();
+    }
+
+    let onChange = event => {
+        event.preventDefault();
+        let file = event.target.files[0];
+        props.updateImage(file);
+    }
+
+    let file  = props.imageFile;
+    let url = file && blobUrl(file)
+      return (
+        <div className="detail-image-banner" onDragOver={onDrag} onDrop={onDrop} onClick={onClick}>
+            <img src={url} onClick={onClick} alt="Drop an image!"/>
+            <input type = "file" onChange={onChange} accept="image/x-png,image/gif,image/jpeg" style={{display: 'none'}}/>
+        </div>
+        
+      );
+  }
 
 function ProductButtonComponent(props){
     function handleMouseDown(e){

@@ -1,5 +1,6 @@
 .detail-div{
-    padding: 5%;
+    box-sizing: border-box;
+    padding: 1%;
     position: absolute;
     z-index: 3;
     left: 50%;
@@ -19,7 +20,7 @@
         position: fixed;
         left: 4%; 
         height:10%;
-        bottom: 10px;
+        padding: 5px;
         display:flex;
         justify-content: flex-end;
         padding: 10px;
@@ -27,14 +28,75 @@
     }
 
     .detail-top-bar{
+        margin-top: 5px;
         overflow: auto;
-        height: 90%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        height: 88%;
         .detail-info-fields{
-            input[type="text"]{
-                border: 1px solid #707070;
+            text-align: initial;
+            flex-grow:2;
+            box-sizing: border-box;
+            height: auto;
+            margin: 10px;
+            width: 60%;
+            min-width: 250px;
+            padding-right: 5px;
+            border-right: 1px solid #707070;
+            input[type="text"], [type="number"]{
+                box-sizing: border-box;
+                margin: 2px;
+                border: 2px solid #70707050;
                 border-radius: 5px;
+                height: 30px;
+                width: 100%;
+            }
+            label{
+                margin: 2px;
+                line-height:1;
+                color: #707070;
+                font-size: 20px;
+                height: 20px;
             }
         }
+        .detail-image-banner{
+            margin-left: 5px;   
+            height: 50%;
+            flex-grow: 1;
+            border: 2px solid #70707050;
+            border-radius: 5px;
+            text-align: center;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            img{
+            max-height: 100%;
+            width: 200px;
+            }
+        }
+        
     }
 }
 
+
+@media (max-width: 450px){
+    .detail-div{
+        width: 95%;
+        .detail-top-bar{
+        .detail-info-fields{
+            width: 100% !important;
+            border: 0 !important;
+        }
+        .detail-image-banner{
+            width: 100%;
+            margin: 0;
+            img{
+            max-height: 100%;
+            width: 100%;
+            }
+        }
+    }
+    }
+}
