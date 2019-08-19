@@ -14,7 +14,14 @@ router.get('/', function(req,res,next){
         Product.find()
         .where('quantities').elemMatch({store: {$in: stores}})
         .exec(function(err, products){
-            return res.send(products).end();
+            User.findById(req.user._id)
+                .populate('stores')
+                .exec(function(err, user){
+                    Category.find()
+                    .exec(function(err, categories){
+                        res.send({stores: user.stores, categories: categories, products: products});
+                    });
+                })
         });
     }
     else{
@@ -30,14 +37,7 @@ router.post('/new', function(req, res, next){
 });
 
 router.get('/new',function(req, res, next){
-    User.findById(req.user._id)
-    .populate('stores')
-    .exec(function(err, stores){
-        Category.find()
-        .exec(function(err, categories){
-            res.send({stores: stores, categories: categories});
-        });
-    })
+    
 });
 
 router.delete('/', async function(req, res, next){

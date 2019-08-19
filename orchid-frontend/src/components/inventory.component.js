@@ -24,7 +24,7 @@ export default class InventoryComponent extends React.Component{
                 tags: []
             },
             newProduct: {
-
+                quantities: []
             },
             sortBy: null
         }  
@@ -39,12 +39,10 @@ export default class InventoryComponent extends React.Component{
     componentDidMount(){
         axios.get('http://localhost:3001/inventory/').then((response) => {
             if(response.status === 200){
-                var prods = response.data;
-                console.log(prods);
-                prods.forEach(element => {
+                response.data.products.forEach(element => {
                     element.checked = false;
                 });
-                this.setState({products: prods, fetching: false});
+                this.setState({products: response.data.products, categories: response.data.categories, stores: response.data.stores, fetching: false});
             }
             }).catch(err => {
                 this.setState({products: [], fetching: false});
@@ -77,21 +75,33 @@ export default class InventoryComponent extends React.Component{
     handleImageUpload(file){
         let {image, ...olState} = this.state.newProduct; 
         this.setState({newProduct: {
+            ...olState,
             image: file
         }});
     }
 
     toggleDetail(){
-        this.setState({isAddingProduct: !this.state.isAddingProduct});
-        axios.get('http://localhost:3001/inventory/new');
+            this.setState({isAddingProduct: !this.state.isAddingProduct}); 
     }
 
     handleInputChange(e){
         var target = e.target;
         var field = target.name;
-        var olState = this.state.newProduct;
-        olState[field] = target.value;
-        this.setState({olState});
+        var oldState = this.state;
+        if(/store/.test(target.id)){
+            //FIX this thing
+            var index =  oldState.newProduct['quantities'].indexOf({store: field});
+            console.log(index);
+            if(index ===-1)
+                oldState.newProduct['quantities'].push({[field]: target.value});
+            else
+                oldState.newProduct['quantities'][index][field] = target.value;
+        }
+        else{
+            
+            oldState.newProduct[field] = target.value;
+        }
+        this.setState(oldState);
     }
 
     render(){
@@ -106,17 +116,18 @@ export default class InventoryComponent extends React.Component{
             <button className="submit-button" onClick={this.toggleDetail}>Add Product</button>
             </div>
             {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> 
-            <ProductDetail 
+            <Detail 
             SubmitBar={<SubmitBar handleSubmit={this.handleAddProduct} submitName="Add"/>}
             ImageUpload={<ImageUpload imageFile={this.state.newProduct.image || ''} updateImage={this.handleImageUpload}/>}
-            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.newProduct}/>}
+            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.newProduct}
+                                categories={this.state.categories} stores={this.state.stores}/>}
             /></div> : null}
         </div>
     ));
     }
 }
 
-function ProductDetail(props){
+function Detail(props){
     return(
     <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
             <div className="detail-top-bar">
@@ -139,12 +150,28 @@ function SubmitBar(props){
 function DetailInfoFields(props){
     return(
         <div className="detail-info-fields">
-            <label for='name'>Name</label>
-            <input type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.name : ''}/>
-            <label for='sku'>SKU</label>
+            <label htmlFor='name'>Name*</label>
+            <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.name : ''}/>
+            <label htmlFor='sku'>SKU*</label>
             <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.sku : ''}/>
-            <label for='price'>Price</label>
-            <input type="number" id="price" name="price" min={0} step={0.01} style={{width: '30%'}} onChange={props.handleInputChange} value={props.product && props.product.price}/>
+            <p>
+            <label htmlFor='price'>Price*</label>
+            <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.price}/>
+            </p>
+            <p>
+            <label htmlFor='cost'>Cost</label>
+            <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.cost}/> 
+            </p>
+            <section>
+                <h3>Quantities*</h3>
+            <ul className="stores-list">
+                {props.stores.map((store)=>
+                <li key={store._id}>
+                    <label htmlFor={`store_${store.name}`}> {(''+store.name).charAt(0).toUpperCase()+store.name.slice(1)}:</label>
+                        <input type='number' name={store.name} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`}/>
+                </li>)}
+            </ul>
+            </section>
         </div>
     );
 }
