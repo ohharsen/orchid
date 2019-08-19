@@ -23,10 +23,10 @@ router.get('/', function(req,res,next){
 });
 
 router.post('/new', function(req, res, next){
-    Product.create(req.body.product, function(err){
-        res.err(err);
-    })
-    
+    // Product.create(req.body.product, function(err){
+    //     res.err(err);
+    // })
+    console.log(req.body.product);
 });
 
 router.get('/new',function(req, res, next){

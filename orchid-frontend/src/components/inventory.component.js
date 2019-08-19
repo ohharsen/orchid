@@ -22,12 +22,19 @@ export default class InventoryComponent extends React.Component{
                 maxQuantity: null,
                 categories: [],
                 tags: []
-            }
+            },
+            newProduct: {
+
+            },
+            sortBy: null
         }  
         this.componentDidMount=this.componentDidMount.bind(this);
         this.handleCheck = this.handleCheck.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.toggleDetail = this.toggleDetail.bind(this);
+        this.handleAddProduct = this.handleAddProduct.bind(this);
+        this.handleImageUpload = this.handleImageUpload.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
     componentDidMount(){
         axios.get('http://localhost:3001/inventory/').then((response) => {
@@ -62,11 +69,29 @@ export default class InventoryComponent extends React.Component{
           .catch(err => console.log(err));
     }
 
-    
+    handleAddProduct(e){
+        e.preventDefault();
+        axios.post('http://localhost:3001/inventory/new', {data:{product: this.state.newProduct}});
+    }
+
+    handleImageUpload(file){
+        let {image, ...olState} = this.state.newProduct; 
+        this.setState({newProduct: {
+            image: file
+        }});
+    }
 
     toggleDetail(){
         this.setState({isAddingProduct: !this.state.isAddingProduct});
         axios.get('http://localhost:3001/inventory/new');
+    }
+
+    handleInputChange(e){
+        var target = e.target;
+        var field = target.name;
+        var olState = this.state.newProduct;
+        olState[field] = target.value;
+        this.setState({olState});
     }
 
     render(){
@@ -80,50 +105,46 @@ export default class InventoryComponent extends React.Component{
             <button id="delete" onClick={this.handleDelete}>Delete</button>
             <button className="submit-button" onClick={this.toggleDetail}>Add Product</button>
             </div>
-            {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> <ProductDetail/></div> : null}
+            {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> 
+            <ProductDetail 
+            SubmitBar={<SubmitBar handleSubmit={this.handleAddProduct} submitName="Add"/>}
+            ImageUpload={<ImageUpload imageFile={this.state.newProduct.image || ''} updateImage={this.handleImageUpload}/>}
+            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.newProduct}/>}
+            /></div> : null}
         </div>
     ));
     }
 }
 
 function ProductDetail(props){
-    const [newProduct, setNewProduct] = useState(0);
-    function handleAddProduct(e){
-        e.preventDefault();
-    }
-    function handleImageUpload(file){
-        let {image, ...olState} = newProduct; 
-        setNewProduct({
-            ...olState,
-            image: file
-        });
-    }
     return(
     <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
             <div className="detail-top-bar">
-                <DetailInfoFields/>
-                <ImageUpload imageFile={newProduct.image || ''} updateImage={handleImageUpload}/>
+                {props.DetailInfoFields}
+                {props.ImageUpload}
             </div>
-            <div className="detail-submit-bar">
-                <input type="submit" onClick={handleAddProduct} value='ADD' className="submit-button"/>   
-            </div>
+            {props.SubmitBar}
     </div>
     );
 }
 
-function SumbitBar(props){
-
+function SubmitBar(props){
+    return(
+        <div className="detail-submit-bar">
+                <input type="submit" onClick={props.handleSubmit} value={props.submitName} className="submit-button"/>   
+        </div>
+    );
 }
 
 function DetailInfoFields(props){
     return(
         <div className="detail-info-fields">
             <label for='name'>Name</label>
-            <input type="text" id="name" style={{width: '100%'}} value={props.product ? props.product.name : ''}/>
+            <input type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.name : ''}/>
             <label for='sku'>SKU</label>
-            <input type="text" id="sku" style={{width: '100%'}} value={props.product ? props.product.sku : ''}/>
+            <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.sku : ''}/>
             <label for='price'>Price</label>
-            <input type="number" id="price"min={0} step={0.01} style={{width: '30%'}} value={props.product && props.product.price}/>
+            <input type="number" id="price" name="price" min={0} step={0.01} style={{width: '30%'}} onChange={props.handleInputChange} value={props.product && props.product.price}/>
         </div>
     );
 }
