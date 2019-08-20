@@ -90,10 +90,10 @@ export default class InventoryComponent extends React.Component{
         var oldState = this.state;
         if(/store/.test(target.id)){
             //FIX this thing
-            var index =  oldState.newProduct['quantities'].indexOf({store: field});
+            var index = oldState.newProduct['quantities'].map(function(val){return val.store}).indexOf(field);
             console.log(index);
             if(index ===-1)
-                oldState.newProduct['quantities'].push({[field]: target.value});
+                oldState.newProduct['quantities'].push({store: field, quantity:  target.value});
             else
                 oldState.newProduct['quantities'][index][field] = target.value;
         }

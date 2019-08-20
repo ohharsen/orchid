@@ -43,6 +43,11 @@ db.on('error', function(err, result){
 //   });
 // });
 
+// Category.create([{name: 'pants'}, {name: 't-shirt'}, {name: 'shoes'}, {name: 'bags'}], function(err, res){
+//   if(err) console.log(err);
+//   else console.log(res);
+// })
+
 var passport = require('./config/passport');
 
 // view engine setup
