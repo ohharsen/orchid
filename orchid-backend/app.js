@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var cors = require('cors'); 
 
+
 var Product = require('./models/product');
 var Category = require('./models/category');
 var Customer = require('./models/customer');

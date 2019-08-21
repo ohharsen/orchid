@@ -68,8 +68,16 @@ export default class InventoryComponent extends React.Component{
     }
 
     handleAddProduct(e){
+        this.setState({fetching: true});
         e.preventDefault();
-        axios.post('http://localhost:3001/inventory/new', {data:{product: this.state.newProduct}});
+        const image = new FormData()
+        image.append('file', this.state.newProduct.image);
+        var data = this.state.newProduct;
+        data.image = image;
+        axios.post('http://localhost:3001/inventory/new', {product: data}).then(res=>{
+            console.log(res);
+            this.setState({isAddingProduct: false, fetching: false, newProduct:{}});
+        });
     }
 
     handleImageUpload(file){
@@ -98,7 +106,6 @@ export default class InventoryComponent extends React.Component{
                 oldState.newProduct['quantities'][index][field] = target.value;
         }
         else{
-            
             oldState.newProduct[field] = target.value;
         }
         this.setState(oldState);
@@ -154,6 +161,7 @@ function DetailInfoFields(props){
             <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.name : ''}/>
             <label htmlFor='sku'>SKU*</label>
             <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.sku : ''}/>
+            <div className="smaller-inputs">
             <p>
             <label htmlFor='price'>Price*</label>
             <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.price}/>
@@ -162,16 +170,24 @@ function DetailInfoFields(props){
             <label htmlFor='cost'>Cost</label>
             <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.cost}/> 
             </p>
+            <p>
+                <label htmlFor="category">Categories</label>
+                <select name="category" className="detail-select" value={props.product.category} onChange={props.handleInputChange}>
+                    {props.categories.map((category)=><option key={category._id} value={category.name}>{capitalize(category.name)}</option>)}
+                </select>
+            </p>
             <section>
                 <h3>Quantities*</h3>
             <ul className="stores-list">
                 {props.stores.map((store)=>
                 <li key={store._id}>
-                    <label htmlFor={`store_${store.name}`}> {(''+store.name).charAt(0).toUpperCase()+store.name.slice(1)}:</label>
+                    <label htmlFor={`store_${store.name}`}> {capitalize(store.name)}:</label>
                         <input type='number' name={store.name} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`}/>
                 </li>)}
             </ul>
             </section>
+            
+            </div>
         </div>
     );
 }
@@ -216,10 +232,12 @@ function ImageUpload(props) {
     }
 
     let file  = props.imageFile;
-    let url = file && blobUrl(file)
+    let url = file && blobUrl(file);
+    console.log(file);
       return (
         <div className="detail-image-banner" onDragOver={onDrag} onDrop={onDrop} onClick={onClick}>
-            <img src={url} onClick={onClick} alt="Drop an image!"/>
+            <img src={url} onClick={onClick} alt="Drop an image!" style={!props.imageFile ? {display: 'none'}: {display: 'block'}}/>
+            <p style={props.imageFile ? {display: 'none'}: {display: 'block'}}>Drop or select an image</p>
             <input type = "file" onChange={onChange} accept="image/x-png,image/gif,image/jpeg" style={{display: 'none'}}/>
         </div>
         
@@ -252,4 +270,9 @@ function ProductButtonComponent(props){
         <input id='productID' type='hidden' value={props.product._id}/>
         </div> 
     );
-}
+};
+
+//----------------------------Helper Functions-----------------------
+ function capitalize(str){
+     return str[0].toUpperCase() + str.slice(1)
+    }; 
