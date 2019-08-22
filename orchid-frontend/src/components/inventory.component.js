@@ -70,13 +70,11 @@ export default class InventoryComponent extends React.Component{
     handleAddProduct(e){
         this.setState({fetching: true});
         e.preventDefault();
-        const image = new FormData()
-        image.append('file', this.state.newProduct.image);
-        var data = this.state.newProduct;
-        data.image = image;
-        axios.post('http://localhost:3001/inventory/new', {product: data}).then(res=>{
-            console.log(res);
-            this.setState({isAddingProduct: false, fetching: false, newProduct:{}});
+        const data = new FormData()
+        data.append('file', this.state.newProduct.image);
+        data.append('product', JSON.stringify(this.state.newProduct));
+        axios.post('http://localhost:3001/inventory/new', data).then(response=>{
+            this.setState({products: response.data.products, fetching: false, isAddingProduct: false,newProduct:{}});
         });
     }
 
@@ -97,7 +95,6 @@ export default class InventoryComponent extends React.Component{
         var field = target.name;
         var oldState = this.state;
         if(/store/.test(target.id)){
-            //FIX this thing
             var index = oldState.newProduct['quantities'].map(function(val){return val.store}).indexOf(field);
             console.log(index);
             if(index ===-1)
@@ -182,7 +179,7 @@ function DetailInfoFields(props){
                 {props.stores.map((store)=>
                 <li key={store._id}>
                     <label htmlFor={`store_${store.name}`}> {capitalize(store.name)}:</label>
-                        <input type='number' name={store.name} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`}/>
+                        <input type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`}/>
                 </li>)}
             </ul>
             </section>
@@ -233,8 +230,7 @@ function ImageUpload(props) {
 
     let file  = props.imageFile;
     let url = file && blobUrl(file);
-    console.log(file);
-      return (
+     return (
         <div className="detail-image-banner" onDragOver={onDrag} onDrop={onDrop} onClick={onClick}>
             <img src={url} onClick={onClick} alt="Drop an image!" style={!props.imageFile ? {display: 'none'}: {display: 'block'}}/>
             <p style={props.imageFile ? {display: 'none'}: {display: 'block'}}>Drop or select an image</p>
@@ -245,6 +241,7 @@ function ImageUpload(props) {
   }
 
 function ProductButtonComponent(props){
+
     function handleMouseDown(e){
         if(e.target.className=='listing-button'){
             e.target.className = 'listing-button clicked';
@@ -255,19 +252,22 @@ function ProductButtonComponent(props){
             e.target.className = 'listing-button';
         }
     }
+    let file  = props.product.image;
+    console.log(file);
+    let url = file ? `data:image/jpeg;base64,${file}`: productSVG;
     return(
         <div 
         className="listing-button" 
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}>
-        <input type="checkbox" onClick={props.handleCheck} onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/>
-        <img src={productSVG} width='40px' height='40px'/>
+        <p><input type="checkbox" onClick={props.handleCheck} onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
+        <p><img src={url} width='40px' height='40px'/></p>
         <p>{props.product.name}</p>
         <p>{props.product.price}</p>
         <p>{props.product.quantities.reduce((acc=0, val) => acc+val.quantity, 0)}</p>
         <p>{props.product.cost}</p>
         <p>{props.product.sku}</p>
-        <input id='productID' type='hidden' value={props.product._id}/>
+        <p><input id='productID' type='hidden' value={props.product._id}/></p>
         </div> 
     );
 };
