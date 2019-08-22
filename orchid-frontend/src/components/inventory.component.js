@@ -26,7 +26,8 @@ export default class InventoryComponent extends React.Component{
             newProduct: {
                 quantities: []
             },
-            sortBy: null
+            sortBy: null,
+            errorMessages: null
         }  
         this.componentDidMount=this.componentDidMount.bind(this);
         this.handleCheck = this.handleCheck.bind(this);
@@ -68,14 +69,35 @@ export default class InventoryComponent extends React.Component{
     }
 
     handleAddProduct(e){
+        var product = this.state.newProduct;
+        var errors = [];
+        if(!product.name){
+            errors.push('Name field is required');
+        }
+        if(!product.sku){
+            errors.push('SKU field is required');
+        }
+        if(!product.price){
+            errors.push('Price field is required');
+        }
+        if(product.quantities.length == 0 || (product.quantities.map(function(val){return val.quantity})).indexOf('') != -1){
+            errors.push('Quantites fields are required');
+        }
+        if(errors.length === 0){
         this.setState({fetching: true});
         e.preventDefault();
         const data = new FormData()
-        data.append('file', this.state.newProduct.image);
+        if(this.state.newProduct.image) data.append('file', this.state.newProduct.image);
         data.append('product', JSON.stringify(this.state.newProduct));
         axios.post('http://localhost:3001/inventory/new', data).then(response=>{
+            console.log(response);
+            if(response.status == 500) 
+            console.log(response.data);
+            else
             this.setState({products: response.data.products, fetching: false, isAddingProduct: false,newProduct:{}});
         });
+    }
+    this.setState({errorMessages: errors});
     }
 
     handleImageUpload(file){
@@ -100,7 +122,7 @@ export default class InventoryComponent extends React.Component{
             if(index ===-1)
                 oldState.newProduct['quantities'].push({store: field, quantity:  target.value});
             else
-                oldState.newProduct['quantities'][index][field] = target.value;
+                oldState.newProduct['quantities'][index]['quantity'] = target.value;
         }
         else{
             oldState.newProduct[field] = target.value;
@@ -120,11 +142,12 @@ export default class InventoryComponent extends React.Component{
             <button className="submit-button" onClick={this.toggleDetail}>Add Product</button>
             </div>
             {this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> 
-            <Detail 
+            <Detail
+            
             SubmitBar={<SubmitBar handleSubmit={this.handleAddProduct} submitName="Add"/>}
             ImageUpload={<ImageUpload imageFile={this.state.newProduct.image || ''} updateImage={this.handleImageUpload}/>}
             DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.newProduct}
-                                categories={this.state.categories} stores={this.state.stores}/>}
+                                categories={this.state.categories} stores={this.state.stores}  ErrorMessages={this.state.errorMessages}/>}
             /></div> : null}
         </div>
     ));
@@ -154,18 +177,26 @@ function SubmitBar(props){
 function DetailInfoFields(props){
     return(
         <div className="detail-info-fields">
+        {props.ErrorMessages?
+        <React.Fragment>
+        <ul className="error-messages">
+        <h4>Please fix the following errors:</h4>
+                    {props.ErrorMessages.map((val)=>
+                        <li key={val}>{val}</li>
+                    )}
+        </ul> </React.Fragment>: ''}
             <label htmlFor='name'>Name*</label>
-            <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.name : ''}/>
+            <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.name || ''}/>
             <label htmlFor='sku'>SKU*</label>
-            <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product ? props.product.sku : ''}/>
+            <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.sku || ''}/>
             <div className="smaller-inputs">
             <p>
             <label htmlFor='price'>Price*</label>
-            <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.price}/>
+            <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.price || ''}/>
             </p>
             <p>
             <label htmlFor='cost'>Cost</label>
-            <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product && props.product.cost}/> 
+            <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.cost || ''}/> 
             </p>
             <p>
                 <label htmlFor="category">Categories</label>
@@ -253,8 +284,10 @@ function ProductButtonComponent(props){
         }
     }
     let file  = props.product.image;
-    console.log(file);
-    let url = file ? `data:image/jpeg;base64,${file}`: productSVG;
+    if(file) {
+    var data = btoa(String.fromCharCode.apply(null, file.data));
+    }
+    let url = file ? `data:image/jpeg;base64,${data}`: productSVG;
     return(
         <div 
         className="listing-button" 

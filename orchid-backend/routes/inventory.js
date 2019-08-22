@@ -46,15 +46,17 @@ router.get('/', function(req,res,next){
 router.post('/new', function(req, res, next){
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
-            return console.log(err)
+            console.log(err)
         } else if (err) {
-            return console.log(err)
+            console.log(err)
         }
+    req.body.product = JSON.parse(req.body.product);
+     if(req.file){
       var image = fs.readFileSync(req.file.path);
-      req.body.product = JSON.parse(req.body.product);
       req.body.product.image = image;
+     }
       Product.create(req.body.product,function(error,result){
-          if(error) console.log(error)
+          if(error) console.log(error);
           else{
             var stores = req.user.stores.map(function(val){
                 return val._id;
