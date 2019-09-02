@@ -27,6 +27,7 @@ router.get('/', function(req,res,next){
         });
         Product.find()
         .where('quantities').elemMatch({store: {$in: stores}})
+        .populate('category')
         .exec(function(err, products){
             User.findById(req.user._id)
                 .populate('stores')
@@ -63,6 +64,7 @@ router.post('/new', function(req, res, next){
             });
             Product.find()
                 .where('quantities').elemMatch({store: {$in: stores}})
+                .populate('category')
                 .exec(function(err, products){
                 return res.status(200).send({products: products});
                 });
@@ -71,6 +73,35 @@ router.post('/new', function(req, res, next){
  })
 
  
+});
+
+router.put('/update', function(req,res,next){
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            console.log(err)
+        } else if (err) {
+            console.log(err)
+        }
+    req.body.product = JSON.parse(req.body.product);
+     if(req.file){
+      var image = fs.readFileSync(req.file.path);
+      req.body.product.image = image;
+     }
+      Product.findByIdAndUpdate(req.body.product._id, req.body.product,function(error,result){
+          if(error) console.log(error);
+          else{
+            var stores = req.user.stores.map(function(val){
+                return val._id;
+            });
+            Product.find()
+                .where('quantities').elemMatch({store: {$in: stores}})
+                .populate('category')
+                .exec(function(err, products){
+                return res.status(200).send({products: products});
+                });
+          }
+      });
+    });
 });
 
 router.get('/new',function(req, res, next){
@@ -91,6 +122,7 @@ router.delete('/', async function(req, res, next){
             });
             Product.find()
             .where('quantities').elemMatch({store: {$in: stores}})
+            .populate('category')
             .exec(function(err, products){
                 res.send(products).end();
             });

@@ -40,7 +40,6 @@ class App extends React.Component {
           <Route exact path = "/" component={DashboardComponent}/>
           <Route exact path = "/login" render={() => <Redirect from="/login" to="/"/>}/>
           <Route exact path = "/inventory" component={InventoryComponent} />
-          <Route exact path = "/inventory/:product" component={InventoryComponent} />
         </Switch>
       </FrameComponent>
     )

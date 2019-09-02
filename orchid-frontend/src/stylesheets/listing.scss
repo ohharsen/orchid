@@ -1,9 +1,125 @@
+.search-filter-container {
+    display: flex;
+    margin: 10px auto;
+    width: 90%;
+    
+}
+
+.search-bar{
+    width: 40%;
+    box-shadow: 3px 3px 6px #00000016;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.filter-button{
+    position: relative;
+    padding: 10px 15px;
+    margin: 0 40px;
+    margin-right: 0;
+    background: white;
+    max-width: 20%;
+    border-radius: 5px;
+    border: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    flex-shrink: 1;
+}
+
+@media (max-width: 450px){
+    .filter-button{
+        margin: 0 3px;
+        padding: 10px 0;
+    }
+    .search-bar{
+        width: 40%;
+    }
+}
+
+.filter-button:focus{
+    outline: none;
+    background: #f5f4f4,
+}
+
+.filter-button .filter-tooltip-div::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -7px;
+    border-width: 7px;
+    border-style: solid;
+    border-color:  transparent transparent white transparent;
+  }
+
+  
+
+  .filter-button .filter-tooltip-div {
+    opacity: 0;
+    visibility: hidden;
+    min-width: 110px;
+    background-color: white;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #70707050;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 130%;
+    left: 50%;
+    margin-left: -55px;
+  }
+
+  .filter-button:hover .filter-tooltip-div, .filter-button:focus .filter-tooltip-div {
+    animation: 0.4s show-filter-toolbar;
+    animation-fill-mode: forwards;
+  }
+
+@keyframes show-filter-toolbar{
+    0% {
+        visibility: visible;
+        opacity: 0;
+    }
+    100% {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+  .filter-minmax-list{
+      list-style: none;
+      padding: 3px;
+      li{
+          width: 100%;
+          label{
+              width: 100%;
+              overflow: hidden;
+              vertical-align: middle;
+          }
+          input[type="number"]{
+            box-sizing: border-box;
+            margin-bottom: 5px;
+            border: 1px solid #70707050;
+            border-radius: 5px;
+            height: 30px;
+            width: 100%;
+            font-size: 20px;
+            color: #777777;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+      }
+  }
+
 .listing-button {
     display: flex;
     border: none;
     border-radius: 5px;
     box-shadow: 5px 5px 6px rgba(0,0,0,0.16);
-    padding: 0;
+    padding: 2px;
     align-items: center;
     justify-content: space-around;
     margin: 7px auto;
@@ -20,25 +136,12 @@
     -webkit-appearance: none;
     -moz-appearance: none;
 
-    input{
-        background: white;
-        width: 30px;
-        height: 30px;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        border: 2px solid #70707080;
-        border-radius: 2px; 
-    }
-    input:checked{
-        background: url(../img/checkbox.png) no-repeat top left;
-        background-size: 30px;
-        border: none;
-    }
+   
     p{
         margin: 0;
         width: calc(100%/6);
         text-align: center;
+        overflow: hidden;
     }
     @media (max-width: 450px){
         p{
@@ -47,11 +150,29 @@
     }
 }
 
+input[type="checkbox"]{
+    background: white;
+    width: 30px;
+    height: 30px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 2px solid #70707080;
+    border-radius: 2px; 
+}
+input[type="checkbox"]:checked{
+    background: url(../img/checkbox.png) no-repeat top left;
+    background-size: 30px;
+    border: none;
+}
+
 .button-list{
     list-style: none;
+    margin: 0;
     overflow: auto;
-    height: 55vh;
+    height: 50vh;
     padding: 0;
+    margin-bottom: 15px;
 }
 
 .listing-button:hover,
@@ -119,4 +240,25 @@
     top: 0;
     right: 0;
     bottom: 0
+}
+
+.sortbar{
+    display: flex;
+    border: none;
+    padding: 0;
+    align-items: center;
+    justify-content: space-around;
+    margin: 0 auto;
+    width: 95%;
+    text-decoration: none;
+    color: white;
+    font-family: Lato;
+    font-size: 20px;
+    p{
+        margin: 0;
+        width: calc(100%/6);
+        text-align: center;
+        cursor: pointer;
+        overflow: hidden;
+    }
 }

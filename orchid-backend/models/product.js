@@ -36,10 +36,10 @@ var ProductSchema = new Schema({
         type: Number, 
         min: 0
     },
-    categories: [{
+    category: {
                 type: Schema.Types.ObjectId, 
                 ref: 'Category'
-        }],
+        },
     tags: [String],
     image: Buffer
 });

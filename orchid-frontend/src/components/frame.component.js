@@ -8,11 +8,19 @@ export default class FrameComponent extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            open: false
+            open: false,
+            hours:new Date().getHours(), 
+            minutes: new Date().getMinutes(),
+            seconds: new Date().getSeconds()
         }
         this.handleClick = this.handleClick.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
        
+    }
+
+    componentDidMount(){
+        setInterval(()=>this.setState({hours:new Date().getHours(), minutes: new Date().getMinutes(), seconds: new Date().getSeconds()}), 1000);
+    
     }
 
     handleClick() {
@@ -80,6 +88,9 @@ export default class FrameComponent extends React.Component{
             <NavLink to="/settings" className="sidebar-link" onClick={this.handleClick}>Settings</NavLink>
             <a href="" onClick={this.handleLogout}  className="sidebar-link">Logout</a>
         </aside>
+        <aside className="time-counter">
+            <TimeCounter hours={this.state.hours} minutes={this.state.minutes} seconds={this.state.seconds} />
+        </aside>
         <main className="frame-main">
             {this.props.children}
         </main>
@@ -90,3 +101,12 @@ export default class FrameComponent extends React.Component{
     )
     }
 } 
+
+function TimeCounter(props){
+    return(
+    <React.Fragment>
+        <h1>{(props.hours < 10 ? '0': '') + props.hours}:{(props.minutes < 10 ? '0': '') + props.minutes}:{(props.seconds < 10 ? '0': '') + props.seconds}</h1>
+        <h2>{Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').reverse()[0].toString().replace('_', ' ')}</h2>
+    </React.Fragment>
+    )
+}
