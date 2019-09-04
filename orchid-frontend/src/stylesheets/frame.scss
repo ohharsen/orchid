@@ -178,6 +178,9 @@ $sidebar-width: 25vw;
 }
 
 @media (max-width: 790px){
+    .time-counter{
+        display: none;
+    }
     .sidebar{
         width: 90vw;
         left: -90vw;

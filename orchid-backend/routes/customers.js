@@ -1,9 +1,8 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var async = require('async');
-var Product = mongoose.model('Product');
+var Customer = mongoose.model('Customer');
 var User = mongoose.model('User');
-var Category = mongoose.model('Category');
 var router = express.Router();
 var multer = require('multer');
 var fs = require('fs');
@@ -11,7 +10,7 @@ var fs = require('fs');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-    cb(null, 'public//images')
+    cb(null, 'public/customers/images')
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' +file.originalname )
@@ -25,17 +24,14 @@ router.get('/', function(req,res,next){
         var stores = req.user.stores.map(function(val){
             return val._id;
         });
-        Product.find()
-        .where('quantities').elemMatch({store: {$in: stores}})
-        .populate('category')
-        .exec(function(err, products){
+        Customer.find()
+        .where({store: {$in: stores}})
+        .exec(function(err, customers){
             User.findById(req.user._id)
                 .populate('stores')
                 .exec(function(err, user){
-                    Category.find()
-                    .exec(function(err, categories){
-                        res.send({stores: user.stores, categories: categories, products: products});
-                    });
+                    console.log({stores: user.stores, customers: customers});
+                        res.send({stores: user.stores, customers: customers});
                 })
         });
     }
@@ -51,28 +47,25 @@ router.post('/new', function(req, res, next){
         } else if (err) {
             console.log(err)
         }
-    req.body.product = JSON.parse(req.body.product);
+    req.body.customer = JSON.parse(req.body.customer);
      if(req.file){
       var image = fs.readFileSync(req.file.path);
-      req.body.product.image = image;
+      req.body.customer.image = image;
      }
-      Product.create(req.body.product,function(error,result){
+      Customer.create(req.body.customer,function(error,result){
           if(error) console.log(error);
           else{
             var stores = req.user.stores.map(function(val){
                 return val._id;
             });
-            Product.find()
-                .where('quantities').elemMatch({store: {$in: stores}})
-                .populate('category')
-                .exec(function(err, products){
-                return res.status(200).send({products: products});
+            Customer.find()
+                .where({store: {$in: stores}})
+                .exec(function(err, customers){
+                return res.status(200).send({customers: customers});
                 });
           }
       });
  })
-
- 
 });
 
 router.put('/update', function(req,res,next){
@@ -105,8 +98,8 @@ router.put('/update', function(req,res,next){
 });
 
 router.delete('/', async function(req, res, next){
-        async.each(req.body.products, function(item, cb){
-            Product
+        async.each(req.body.customers, function(item, cb){
+            Customer
             .findByIdAndRemove(item, function(err){
                 if(err) cb(err);
                 cb();
@@ -116,11 +109,10 @@ router.delete('/', async function(req, res, next){
             var stores = req.user.stores.map(function(val){
                 return val._id;
             });
-            Product.find()
-            .where('quantities').elemMatch({store: {$in: stores}})
-            .populate('category')
-            .exec(function(err, products){
-                res.send(products).end();
+            Customer.find()
+            .where({store: {$in: stores}})
+            .exec(function(err, customers){
+                res.send(customers).end();
             });
         });
 });

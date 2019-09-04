@@ -19,12 +19,13 @@ var User = require('./models/user');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var inventoryRouter = require('./routes/inventory');
+var customerRouter = require('./routes/customers');
 
 var app = express();
 
 // set up the DB
 var mongoDB = 'mongodb+srv://orchidUser:orchidPassword@cluster0-lthzs.mongodb.net/test?retryWrites=true&w=majority';
-mongoose.connect(mongoDB, {useNewUrlParser: true, useCreateIndex: true});
+mongoose.connect(mongoDB, {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false});
 
 // get default connection
 var db = mongoose.connection;
@@ -48,6 +49,24 @@ db.on('error', function(err, result){
 //   if(err) console.log(err);
 //   else console.log(res);
 // })
+
+// Store.find({name: 'bessini'}, function(err, store){
+//     //console.log(store[0]._id);
+    
+//   });
+
+  // var newCust = new Customer({first_name: 'Arsen', last_name: 'Ohanyan', phone_number: '818-518-7085', email: 'arsenohanyan@gmail.com', store: mongoose.Types.ObjectId('5d4f865ce93a965efc24c0a6'), card_number: '?sadasd65187'});
+  // newCust.save(function(err, cust){
+  //   err ? console.log(err) : console.log(cust);
+  // })
+
+  // Store.find().then(stores => 
+  //   User.findOneAndUpdate({username: 'gagueik'}, {stores: [...stores]}, function(err, user){
+  //         console.log(user);
+  //   })
+  //   );
+
+
 
 var passport = require('./config/passport');
 
@@ -83,6 +102,7 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/inventory', inventoryRouter);
+app.use('/customers', customerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

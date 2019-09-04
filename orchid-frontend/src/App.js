@@ -6,6 +6,7 @@ import DashboardComponent from './components/dashboard.component';
 import FrameComponent from './components/frame.component';
 import SpinnerComponent from './components/spinner.component';
 import InventoryComponent from './components/inventory.component';
+import CustomersComponent from './components/customers.component';
 
 class App extends React.Component {
   constructor(props){ 
@@ -40,6 +41,7 @@ class App extends React.Component {
           <Route exact path = "/" component={DashboardComponent}/>
           <Route exact path = "/login" render={() => <Redirect from="/login" to="/"/>}/>
           <Route exact path = "/inventory" component={InventoryComponent} />
+          <Route exact path = "/customers" component={CustomersComponent} />
         </Switch>
       </FrameComponent>
     )

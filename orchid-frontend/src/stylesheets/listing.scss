@@ -1,3 +1,24 @@
+.container{
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    h1{
+        font-family: Lato;
+        font-size: 35px;
+        color: white;
+        margin-bottom: 50px; 
+    }    
+}
+
+
+@media (max-width: 450px){
+    .container{
+        width: 100%;
+    }
+}
+
 .search-filter-container {
     display: flex;
     margin: 10px auto;
@@ -262,3 +283,4 @@ input[type="checkbox"]:checked{
         overflow: hidden;
     }
 }
+

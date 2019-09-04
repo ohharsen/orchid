@@ -37,7 +37,7 @@ var CustomerSchema = new Schema({
             message: 'Email not of appropriate format'
         }
     },
-    date_joined: {type: Date, default: Date.now(), immutable: true},
+    date_joined: {type: Date, default: new Date(), immutable: true},
     sales: {type: Number, min: 0},
     store: {
         type: Schema.Types.ObjectId, 
@@ -47,7 +47,7 @@ var CustomerSchema = new Schema({
         type: String,
         trim: true
     },
-    avatar: Buffer
+    image: Buffer
 });
 
 // TODO
@@ -72,11 +72,6 @@ CustomerSchema
     The minimum discount for any customer is 5% and 1% is added for each $1000 of sales
     It will be left this way until discount rules are added
     */
-});
-
-CustomerSchema
-.pre('save', function(doc){
-
 });
 
 module.exports = mongoose.model('Customer', CustomerSchema);

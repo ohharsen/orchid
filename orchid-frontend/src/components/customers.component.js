@@ -3,28 +3,24 @@ import axios from 'axios';
 import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/detail.scss';
-import productSVG from '../img/svg/product.svg';
+import customerSVG from '../img/svg/users.svg';
 
 const Categories = React.createContext();
 
-export default class InventoryComponent extends React.Component{
+export default class CustomerComponent extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            products: [],
+            customers: [],
             fetching: true,
-            isAddingProduct: false,
-            isViewingProduct: false,
+            isAdding: false,
+            isViewing: false,
             inDetailMode: false,
             filters: {
-                minPrice: 0,
-                maxPrice: Infinity,
-                minQuantity: 0,
-                maxQuantity: Infinity,
-                categories: []
+                minSale: 0,
+                maxSale: Infinity,
             },
-            detailProduct: {
-                quantities: null
+            detail: {
             },
             sortBy: null,
             sortVal: 1,
@@ -35,22 +31,23 @@ export default class InventoryComponent extends React.Component{
         this.handleCheck = this.handleCheck.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.toggleDetail = this.toggleDetail.bind(this);
-        this.handleAddProduct = this.handleAddProduct.bind(this);
+        this.handleAdd = this.handleAdd.bind(this);
         this.handleImageUpload = this.handleImageUpload.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleUpdateProduct = this.handleUpdateProduct.bind(this);
-        this.handleViewProduct = this.handleViewProduct.bind(this);
+        this.handleUpdate = this.handleUpdate.bind(this);
+        this.handleView = this.handleView.bind(this);
         this.handleSort = this.handleSort.bind(this);
         this.handleSearchInput = this.handleSearchInput.bind(this);
         this.handleFilterChange = this.handleFilterChange.bind(this);
     }
     componentDidMount(){
-        axios.get('http://localhost:3001/inventory/').then((response) => {
+        axios.get('http://localhost:3001/customers/').then((response) => {
             if(response.status === 200){
-                response.data.products.forEach(element => {
+                response.data.customers.map(val => val.name = val.first_name + ' ' + val.last_name);
+                response.data.customers.forEach(element => {
                     element.checked = false;
                 });
-                this.setState({products: response.data.products, categories: response.data.categories, stores: response.data.stores, fetching: false});
+                this.setState({customers: response.data.customers, stores: response.data.stores, fetching: false});
             }
             }).catch(err => {
                 this.setState({products: [], fetching: false});
@@ -85,60 +82,66 @@ export default class InventoryComponent extends React.Component{
     }
 
     handleCheck(e){
-        var index = this.state.products.indexOf(this.state.products.find(product=>product._id == e.target.parentNode.parentNode.lastChild.lastChild.value));
+        var index = this.state.customers.indexOf(this.state.customers.find(customer=>customer._id == e.target.parentNode.parentNode.lastChild.lastChild.value));
         var stateBuf = this.state;
         console.log(index);
-        stateBuf.products[index].checked = !stateBuf.products[index].checked;
+        stateBuf.customers[index].checked = !stateBuf.customers[index].checked;
         this.setState(stateBuf);
     }
     
     handleDelete(e){
-        var prods = this.state.products.filter((val) => val.checked).map((val) => val._id);
-        if(prods.length === 0) return;
+        var custs = this.state.customers.filter((val) => val.checked).map((val) => val._id);
+        if(custs.length === 0) return;
          this.setState({fetching: true});
-          axios.delete('http://localhost:3001/inventory/', {data: {products: prods}})
+          axios.delete('http://localhost:3001/customers/', {data: {customers: custs}})
           .then((response) => {
-            this.setState({products: response.data, fetching: false});
+            this.setState({customers: response.data, fetching: false});
             })
           .catch(err => console.log(err));
     }
 
-    handleAddProduct(e){
-        var product = this.state.detailProduct;
+    handleAdd(e){
+        var customer = this.state.detail;
         var errors = [];
-        if(!product.name){
-            errors.push('Name field is required');
+        if(!customer.first_name){
+            errors.push('First Name field is required');
         }
-        if(!product.sku){
-            errors.push('SKU field is required');
+        if(!customer.last_name){
+            errors.push('Last Name field is required');
         }
-        if(!product.price){
-            errors.push('Price field is required');
+
+        if(!customer.phone_number){
+            errors.push('Phone Number field is required');
         }
-        if(product.quantities.length == 0 || (product.quantities.map(function(val){return val.quantity})).indexOf('') != -1){
-            errors.push('Quantities fields are required');
+        else if(!/^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/.test(customer.phone_number))
+        {
+            errors.push('Not appropriate phone number format');
+        }
+            console.log(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(customer.email));
+        if(customer.email && !/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(customer.email)){
+            errors.push('Not appropriate email format')
         }
         if(errors.length === 0){
         this.setState({fetching: true});
         e.preventDefault();
         const data = new FormData();
-        var product = JSON.parse(JSON.stringify(this.state.detailProduct));
-        // product.category = this.state.categories[this.state.categories.map(val => val.name).indexOf(product.category.toLowerCase())]._id
-        if(this.state.detailProduct.image) data.append('file', this.state.detailProduct.image);
-        data.append('product', JSON.stringify(product));
-        axios.post('http://localhost:3001/inventory/new', data).then(response=>{
+        var customer = JSON.parse(JSON.stringify(this.state.detail));
+        // customer.category = this.state.categories[this.state.categories.map(val => val.name).indexOf(customer.category.toLowerCase())]._id
+        if(this.state.detail.image) data.append('file', this.state.detail.image);
+        data.append('customer', JSON.stringify(customer));
+        axios.post('http://localhost:3001/customers/new', data).then(response=>{
             console.log(response);
             if(response.status == 500) 
             console.log(response.data);
             else
-            this.setState({products: response.data.products, fetching: false, isAddingProduct: false, inDetailMode: false, detailProduct:{quantities: null}, errorMessages: null});
+            this.setState({customers: response.data.customers, fetching: false, isAdding: false, inDetailMode: false, detail:{quantities: null}, errorMessages: null});
         });
     }
     this.setState({errorMessages: errors});
     }
 
-    handleUpdateProduct(e){
-        var product = this.state.detailProduct;
+    handleUpdate(e){
+        var product = this.state.detail;
         var errors = [];
         if(!product.name){
             errors.push('Name field is required');
@@ -156,60 +159,49 @@ export default class InventoryComponent extends React.Component{
         this.setState({fetching: true});
         e.preventDefault();
         const data = new FormData()
-        var product = JSON.parse(JSON.stringify(this.state.detailProduct));
+        var product = JSON.parse(JSON.stringify(this.state.detail));
         // product.category = this.state.categories[this.state.categories.map(val => val.name).indexOf(product.category.toLowerCase())]._id;
         console.log(product);
-        if(this.state.detailProduct.image) data.append('file', this.state.detailProduct.image);
+        if(this.state.detail.image) data.append('file', this.state.detail.image);
         data.append('product', JSON.stringify(product));
         axios.put('http://localhost:3001/inventory/update', data).then(response=>{
             console.log(response);
             if(response.status == 500) 
             console.log(response.data);
             else
-            this.setState({products: response.data.products, fetching: false, isViewinggProduct: false, inDetailMode: false, detailProduct:{}, errorMessages: null});
+            this.setState({products: response.data.products, fetching: false, isViewinggProduct: false, inDetailMode: false, detail:{}, errorMessages: null});
         });
     }
     this.setState({errorMessages: errors});
     }
 
     handleImageUpload(file){
-        let {image, ...olState} = this.state.detailProduct; 
-        this.setState({detailProduct: {
+        let {image, ...olState} = this.state.detail; 
+        this.setState({detail: {
             ...olState,
             image: file
         }});
     }
 
     toggleDetail(){
-            this.setState({inDetailMode: false, isAddingProduct: false, isViewingProduct: false, detailProduct: {}}); 
+            this.setState({inDetailMode: false, isAdding: false, isViewing: false, detail: {}}); 
     }
 
     handleInputChange(e){
         var target = e.target;
         var field = target.name;
         var oldState = {...this.state};
-        if(/store/.test(target.id)){
-            var index = oldState.detailProduct['quantities'] && oldState.detailProduct['quantities'].map(function(val){return val.store}).indexOf(field);
-            if(index ===null){
-                oldState.detailProduct['quantities'] = [];
-                oldState.detailProduct['quantities'].push({store: field, quantity:  target.value});
-            }
-            else if(index ===-1)
-                oldState.detailProduct['quantities'].push({store: field, quantity:  target.value});
-            else
-                oldState.detailProduct['quantities'][index]['quantity'] = target.value;
-        }
-        else if(field == 'category'){
-            oldState.detailProduct[field] = this.state.categories[this.state.categories.map(val => val.name).indexOf(e.target.value.toLowerCase())]
+        if(field == 'store'){
+            oldState.detail[field] = this.state.stores[this.state.stores.map(val => val.name).indexOf(e.target.value.toLowerCase())]
         }
         else{
-            oldState.detailProduct[field] = target.value;
+            oldState.detail[field] = target.value;
         }
         this.setState(oldState);
     }
 
-    handleViewProduct(product){
-        this.setState({detailProduct: this.state.products[this.state.products.map(value => value._id).indexOf(product._id)], isViewingProduct: true, inDetailMode: true});
+    handleView(customer){
+        this.setState({detail: this.state.customers[this.state.customers.map(value => value._id).indexOf(customer._id)], isViewing: true, inDetailMode: true});
     }
 
     handleSort(e){
@@ -222,54 +214,85 @@ export default class InventoryComponent extends React.Component{
     }
 
     render(){
-        var productish;
-        var filters = this.state.filters;
-        productish =JSON.parse(JSON.stringify(this.state)).products;
-        productish = productish.filter((val) => val.name.includes(this.state.searchText) || val.sku.includes(this.state.searchText) ? true : false);
-        productish = productish.filter((val) => filters.categories.indexOf(val.category._id) != -1 || filters.categories.length == 0);
-        productish.forEach(function(value) { 
-        value.quantities = value.quantities.reduce((acc=0, val) => acc+val.quantity, 0)
-        });
-        productish = productish.filter((val) => val.price >= filters.minPrice && val.price <= filters.maxPrice && val.quantities >= filters.minQuantity && val.quantities <= filters.maxQuantity); 
-        //combine filters
+        // var productish;
+        // var filters = this.state.filters;
+        // productish =JSON.parse(JSON.stringify(this.state)).products;
+        // productish = productish.filter((val) => val.name.includes(this.state.searchText) || val.sku.includes(this.state.searchText) ? true : false);
+        // productish = productish.filter((val) => filters.categories.indexOf(val.category._id) != -1 || filters.categories.length == 0);
+        // productish.forEach(function(value) { 
+        // value.quantities = value.quantities.reduce((acc=0, val) => acc+val.quantity, 0)
+        // });
+        // productish = productish.filter((val) => val.price >= filters.minPrice && val.price <= filters.maxPrice && val.quantities >= filters.minQuantity && val.quantities <= filters.maxQuantity); 
+        // //combine filters
         return (this.state.fetching? <SpinnerComponent /> : (
-        <Categories.Provider value={this.state.categories}>
         <div className="container">
-            <h1>INVENTORY</h1>
-            <SearchFilter onSearchInput={this.handleSearchInput} searchText={this.state.searchText} filters={this.state.filters} handleFilterChange={this.handleFilterChange}/>
-            <SortBar onClick={this.handleSort} sortBy={this.state.sortBy} sortVal={this.state.sortVal}/>
+            <h1>CUSTOMERS</h1>
+            
+            <SearchFilter 
+                onSearchInput={this.handleSearchInput} 
+                searchText={this.state.searchText} 
+                filters={this.state.filters} 
+                handleFilterChange={this.handleFilterChange}
+            />
+            
+            <SortBar 
+                onClick={this.handleSort} 
+                sortBy={this.state.sortBy} 
+                sortVal={this.state.sortVal}
+            />
+
             <ul className="button-list">
-            {productish.sort((a,b) => a[this.state.sortBy] > b[this.state.sortBy] ? this.state.sortVal : -this.state.sortVal).map((val)=><li key={val._id}><ProductButtonComponent product={val} handleCheck={this.handleCheck} onClick={this.handleViewProduct}/></li>)}
+            {this.state.customers.map((val)=><li key={val._id}>
+                    <ButtonComponent 
+                        customer={val} 
+                        handleCheck={this.handleCheck} 
+                        onClick={this.handleView}/>
+                </li>
+            )}
             </ul>
+
             <div className="button-bar">
-            <button id="delete" onClick={this.handleDelete}>Delete</button>
-            <button className="submit-button" onClick={() => this.setState({inDetailMode: true, isAddingProduct: true})}>Add Product</button>
+                <button id="delete" onClick={this.handleDelete}>Delete</button>
+                <button className="submit-button" onClick={() => this.setState({inDetailMode: true, isAdding: true})}>Add Customer</button>
             </div>
-            {this.state.inDetailMode && this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> 
-            <Detail
-            
-            SubmitBar={<SubmitBar handleSubmit={this.handleAddProduct} submitName="Add"/>}
-            ImageUpload={<ImageUpload imageFile={this.state.detailProduct.image || ''} updateImage={this.handleImageUpload}/>}
-            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.detailProduct}
-                                categories={this.state.categories} stores={this.state.stores}  ErrorMessages={this.state.errorMessages}/>}
-            /></div> : this.state.inDetailMode && this.state.isViewingProduct ? 
+
+            {this.state.inDetailMode && this.state.isAdding ? 
             <div onClick={this.toggleDetail} className='backdrop'> 
-            <Detail
-            
-            SubmitBar={<SubmitBar handleSubmit={this.handleUpdateProduct} submitName="Update"/>}
-            ImageUpload={<ImageUpload imageFile={this.state.detailProduct.image || ''} updateImage={this.handleImageUpload}/>}
-            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.detailProduct}
-                                categories={this.state.categories} stores={this.state.stores}  ErrorMessages={this.state.errorMessages}/>}
-            /></div> : null}
+                <Detail
+                    SubmitBar={<SubmitBar handleSubmit={this.handleAdd} submitName="Add"/>}
+                    ImageUpload={<ImageUpload imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    DetailInfoFields={
+                        <DetailInfoFields 
+                            handleInputChange={this.handleInputChange} 
+                            customer={this.state.detail}
+                            stores={this.state.stores}  
+                            ErrorMessages={this.state.errorMessages}
+                        />
+                    }
+                />
+            </div> : this.state.inDetailMode && this.state.isViewing ? 
+            <div onClick={this.toggleDetail} className='backdrop'> 
+                <Detail 
+                    SubmitBar={<SubmitBar handleSubmit={this.handleUpdate} submitName="Update"/>}
+                    ImageUpload={<ImageUpload imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    DetailInfoFields={
+                        <DetailInfoFields 
+                            handleInputChange={this.handleInputChange} 
+                            customer={this.state.detail}
+                            categories={this.state.categories} 
+                            stores={this.state.stores}  
+                            ErrorMessages={this.state.errorMessages}
+                        />
+                    }
+                />
+            </div> : null}
         </div>
-        </Categories.Provider>
     ));
     }
 }
 
 function SearchFilter(props){
-   return <Categories.Consumer>
-    {categories =>(
+   return (
      <div className="search-filter-container">
         <input type="search" className="search-bar" placeholder="Enter the Name or SKU..." onChange={props.onSearchInput} value={props.searchText}/>
         <button className="filter-button">
@@ -303,7 +326,7 @@ function SearchFilter(props){
             </div>
         </button>
 
-        <button className="filter-button">
+        {/* <button className="filter-button">
             Categories ▼
             <div className="filter-tooltip-div">
                 <ul className="filter-minmax-list">
@@ -314,9 +337,8 @@ function SearchFilter(props){
                     </li>)}
                 </ul>
             </div>
-        </button>
-    </div>)}
-    </Categories.Consumer>
+        </button> */}
+    </div>)
 }
 
 function SortBar(props){
@@ -325,15 +347,15 @@ function SortBar(props){
     <p></p>
     <p>Image</p>
     <p onClick={props.onClick}>{props.sortBy == 'name' && props.sortVal == 1 ? <u>Name ▲</u> : props.sortBy == 'name' ? <u>Name ▼</u> : 'Name ▼'}</p>
-    <p onClick={props.onClick}>{props.sortBy == 'price' && props.sortVal == 1 ? <u>Price ▲</u> : props.sortBy == 'price' ? <u>Price ▼</u> : 'Price ▼'}</p>
-    <p onClick={props.onClick}>{props.sortBy == 'quantities' && props.sortVal == 1 ? <u>Quantities ▲</u> : props.sortBy == 'quantities' ? <u>Quantities ▼</u> : 'Quantities ▼'}</p>
-    <p onClick={props.onClick}>{props.sortBy == 'cost' && props.sortVal == 1 ? <u>Cost ▲</u> : props.sortBy == 'cost' ? <u>Cost ▼</u> : 'Cost ▼'}</p>
-    <p onClick={props.onClick}>{props.sortBy == 'sku' && props.sortVal == 1 ? <u>SKU ▲</u> : props.sortBy == 'sku' ? <u>SKU ▼</u> : 'SKU ▼'}</p>
+    <p onClick={props.onClick}>{props.sortBy == 'phone_number' && props.sortVal == 1 ? <u>Price ▲</u> : props.sortBy == 'price' ? <u>Price ▼</u> : 'Price ▼'}</p>
+    <p onClick={props.onClick}>{props.sortBy == 'date_joined' && props.sortVal == 1 ? <u>Quantities ▲</u> : props.sortBy == 'quantities' ? <u>Quantities ▼</u> : 'Quantities ▼'}</p>
+    <p onClick={props.onClick}>{props.sortBy == 'sales' && props.sortVal == 1 ? <u>Cost ▲</u> : props.sortBy == 'cost' ? <u>Cost ▼</u> : 'Cost ▼'}</p>
+    <p onClick={props.onClick}>{props.sortBy == 'card_number' && props.sortVal == 1 ? <u>SKU ▲</u> : props.sortBy == 'sku' ? <u>SKU ▼</u> : 'SKU ▼'}</p>
     <p></p>
     </div> 
 }
 
-function ProductButtonComponent(props){
+function ButtonComponent(props){
 
     function handleMouseDown(e){
         if(e.target.type!='INPUT'){
@@ -345,14 +367,16 @@ function ProductButtonComponent(props){
         if(e.target.type!='INPUT'){
             if(e.target.parentNode.className == 'listing-button clicked')
                 e.target.parentNode.className = 'listing-button';
-            props.onClick(props.product);
+            props.onClick(props.customer);
         }
     }
-    let file  = props.product.image;
+    let file  = props.customer.image;
     if(file) {
     var data = btoa(String.fromCharCode.apply(null, file.data));
     }
-    let url = file ? `data:image/jpeg;base64,${data}`: productSVG;
+    let url = file ? `data:image/jpeg;base64,${data}`: customerSVG;
+    let date = new Date(props.customer.date_joined);
+    let displayDate = (date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth())  + '/' + (date.getDay() < 10 ? '0' + date.getDay() : date.getDay()) + '/' + date.getFullYear(); 
     return(
         <div 
         className="listing-button" 
@@ -360,12 +384,13 @@ function ProductButtonComponent(props){
         onMouseUp={handleMouseUp}>
         <p><input type="checkbox" onClick={props.handleCheck} onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
         <p><img src={url} width='40px' height='40px'/></p>
-        <p>{props.product.name}</p>
-        <p>{props.product.price}</p>
-        <p>{props.product.quantities}</p>
-        <p>{props.product.cost}</p>
-        <p>{props.product.sku}</p>
-        <p><input id='productID' type='hidden' value={props.product._id}/></p>
+        <p>{props.customer.first_name + ' ' + props.customer.last_name}</p>
+        <p>{props.customer.phone_number}</p>
+        <p>{props.customer.email}</p>
+        <p>{displayDate}</p>
+        <p>{props.customer.sales || 0}</p>
+        <p>{props.customer.card_number}</p>
+        <p><input id='customerID' type='hidden' value={props.customer._id}/></p>
         </div> 
     );
 };
@@ -393,37 +418,46 @@ function DetailInfoFields(props){
                         <li key={val}>{val}</li>
                     )}
         </ul> </React.Fragment>: ''}
-            <label htmlFor='name'>Name*</label>
-            <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.name || ''}/>
-            <label htmlFor='sku'>SKU*</label>
-            <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.sku || ''}/>
-            <div className="smaller-inputs">
-            <p>
-            <label htmlFor='price'>Price*</label>
-            <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.price || ''}/>
-            </p>
-            <p>
-            <label htmlFor='cost'>Cost</label>
-            <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.cost || ''}/> 
-            </p>
-            <p>
-                <label htmlFor="category">Categories</label>
-                <select name="category" className="detail-select" value={props.product.category && capitalize(props.product.category.name)} onChange={props.handleInputChange}>
-                    {props.categories.map((category)=><option key={category._id}>{capitalize(category.name)}</option>)}
-                </select>
-            </p>
-            <section>
-                <h3>Quantities*</h3>
-            <ul className="stores-list">
-                {props.stores.map((store, index)=>
-                <li key={store._id}>
-                    <label htmlFor={`store_${store.name}`}> {capitalize(store.name)}:</label>
-                        <input type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`} value={props.product.quantities && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)] && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)].quantity || ''}/>
-                </li>)}
-            </ul>
-            </section>
-            
-            </div>
+        <ul className="forms-listing">
+            <li>
+            <label htmlFor='first_name'>First Name</label>
+            <input required type="text" id="first_name" name="first_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.first_name || ''}/>
+            </li>
+
+            <li>
+            <label htmlFor='last_name'>Last Name</label>
+            <input required type="text" id="last_name" name="last_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.last_name || ''}/>
+            </li>
+
+            <li style={{display: "flex", flexGrow: 1}}>
+                <div>
+                    <label htmlFor='phone_number'>Phone Number</label>
+                    <input required type="text" id="phone_number" name="phone_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.phone_number || ''}/>
+                </div>
+                <div>
+                    <label htmlFor='email'>Email</label>
+                    <input required type="email" id="email" name="email" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.email || ''}/>
+                </div>
+            </li>
+
+            <li>
+            <label htmlFor='card_number'>Card Number</label>
+            <input required type="text" id="card_number" name="card_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.card_number || ''}/>
+            </li>
+
+            <li style={{display: "flex", flexGrow: 1}}>
+                <div>
+                    <label htmlFor="store">Store</label>
+                    <select name="store" className="detail-select" value={props.customer.store && capitalize(props.customer.store.name)} onChange={props.handleInputChange}>
+                        {props.stores.map((store)=><option key={store._id}>{capitalize(store.name)}</option>)}
+                    </select>
+                 </div>
+                <div>
+                    <label htmlFor='sales'>Sales</label>
+                    <input required type="text" id="sales" name="sales" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.sales || ''}/>
+                </div>
+            </li>
+        </ul>
         </div>
     );
 }
@@ -471,7 +505,7 @@ function ImageUpload(props) {
     let url;
     if(file && file.type == 'Buffer'){
         var data = btoa(String.fromCharCode.apply(null, file.data));
-        url = file ? `data:image/jpeg;base64,${data}`: productSVG;
+        url = file ? `data:image/jpeg;base64,${data}`: customerSVG;
     }
     else{
         url = file && blobUrl(file);
