@@ -50,7 +50,7 @@ export default class InventoryComponent extends React.Component{
                 response.data.products.forEach(element => {
                     element.checked = false;
                 });
-                this.setState({products: response.data.products, categories: response.data.categories, stores: response.data.stores, fetching: false});
+                this.setState({products: response.data.products, categories: response.data.categories, stores: response.data.stores, detailProduct: { quantities: null, category: response.data.categories[0]}, fetching: false});
             }
             }).catch(err => {
                 this.setState({products: [], fetching: false});
@@ -124,6 +124,7 @@ export default class InventoryComponent extends React.Component{
         const data = new FormData();
         var product = JSON.parse(JSON.stringify(this.state.detailProduct));
         // product.category = this.state.categories[this.state.categories.map(val => val.name).indexOf(product.category.toLowerCase())]._id
+        console.log(this.state.detailProduct.image);
         if(this.state.detailProduct.image) data.append('file', this.state.detailProduct.image);
         data.append('product', JSON.stringify(product));
         axios.post('http://localhost:3001/inventory/new', data).then(response=>{
@@ -131,7 +132,7 @@ export default class InventoryComponent extends React.Component{
             if(response.status == 500) 
             console.log(response.data);
             else
-            this.setState({products: response.data.products, fetching: false, isAddingProduct: false, inDetailMode: false, detailProduct:{quantities: null}, errorMessages: null});
+            this.setState({products: response.data.products, fetching: false, isAddingProduct: false, inDetailMode: false, detailProduct: { quantities: null, category: this.state.categories[0] }, errorMessages: null});
         });
     }
     this.setState({errorMessages: errors});
@@ -166,7 +167,7 @@ export default class InventoryComponent extends React.Component{
             if(response.status == 500) 
             console.log(response.data);
             else
-            this.setState({products: response.data.products, fetching: false, isViewinggProduct: false, inDetailMode: false, detailProduct:{}, errorMessages: null});
+            this.setState({products: response.data.products, fetching: false, isViewinggProduct: false, inDetailMode: false, detailProduct: { quantities: null, category: this.state.categories[0] }, errorMessages: null});
         });
     }
     this.setState({errorMessages: errors});
@@ -181,7 +182,7 @@ export default class InventoryComponent extends React.Component{
     }
 
     toggleDetail(){
-            this.setState({inDetailMode: false, isAddingProduct: false, isViewingProduct: false, detailProduct: {}}); 
+            this.setState({inDetailMode: false, isAddingProduct: false, isViewingProduct: false, detailProduct: { quantities: null, category: this.state.categories[0] }}); 
     }
 
     handleInputChange(e){

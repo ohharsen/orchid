@@ -10,7 +10,7 @@ var fs = require('fs');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-    cb(null, 'public/customers/images')
+    cb(null, 'public/images/customers')
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' +file.originalname )
@@ -41,6 +41,7 @@ router.get('/', function(req,res,next){
 });
 
 router.post('/new', function(req, res, next){
+    console.log(req);
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             console.log(err)
@@ -48,9 +49,11 @@ router.post('/new', function(req, res, next){
             console.log(err)
         }
     req.body.customer = JSON.parse(req.body.customer);
+    console.log(req.file);
      if(req.file){
       var image = fs.readFileSync(req.file.path);
       req.body.customer.image = image;
+      
      }
       Customer.create(req.body.customer,function(error,result){
           if(error) console.log(error);
@@ -75,22 +78,21 @@ router.put('/update', function(req,res,next){
         } else if (err) {
             console.log(err)
         }
-    req.body.product = JSON.parse(req.body.product);
+    req.body.customer = JSON.parse(req.body.customer);
      if(req.file){
       var image = fs.readFileSync(req.file.path);
-      req.body.product.image = image;
+      req.body.customer.image = image;
      }
-      Product.findByIdAndUpdate(req.body.product._id, req.body.product,function(error,result){
+      Customer.findByIdAndUpdate(req.body.customer._id, req.body.customer,function(error,result){
           if(error) console.log(error);
           else{
             var stores = req.user.stores.map(function(val){
                 return val._id;
             });
-            Product.find()
-                .where('quantities').elemMatch({store: {$in: stores}})
-                .populate('category')
-                .exec(function(err, products){
-                return res.status(200).send({products: products});
+            Customer.find()
+                .where({store: {$in: stores}})
+                .exec(function(err, customers){
+                return res.status(200).send({customers: customers});
                 });
           }
       });

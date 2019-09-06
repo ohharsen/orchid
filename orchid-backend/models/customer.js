@@ -38,7 +38,7 @@ var CustomerSchema = new Schema({
         }
     },
     date_joined: {type: Date, default: new Date(), immutable: true},
-    sales: {type: Number, min: 0},
+    sales: {type: Number, default: 0, min: 0},
     store: {
         type: Schema.Types.ObjectId, 
         ref: 'Store'
