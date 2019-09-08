@@ -4,6 +4,7 @@ import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/detail.scss';
 import productSVG from '../img/svg/product.svg';
+import ImageUpload from './Presentational Components/ImageUpload.component';
 
 const Categories = React.createContext();
 
@@ -237,31 +238,95 @@ export default class InventoryComponent extends React.Component{
         <Categories.Provider value={this.state.categories}>
         <div className="container">
             <h1>INVENTORY</h1>
-            <SearchFilter onSearchInput={this.handleSearchInput} searchText={this.state.searchText} filters={this.state.filters} handleFilterChange={this.handleFilterChange}/>
-            <SortBar onClick={this.handleSort} sortBy={this.state.sortBy} sortVal={this.state.sortVal}/>
+            <SearchFilter 
+                onSearchInput={this.handleSearchInput} 
+                searchText={this.state.searchText} 
+                filters={this.state.filters} 
+                handleFilterChange={this.handleFilterChange}
+            />
+            <SortBar 
+                onClick={this.handleSort} 
+                sortBy={this.state.sortBy} 
+                sortVal={this.state.sortVal}
+            />
             <ul className="button-list">
-            {productish.sort((a,b) => a[this.state.sortBy] > b[this.state.sortBy] ? this.state.sortVal : -this.state.sortVal).map((val)=><li key={val._id}><ProductButtonComponent product={val} handleCheck={this.handleCheck} onClick={this.handleViewProduct}/></li>)}
+            {productish.sort(
+            (a,b) => 
+                a[this.state.sortBy] > b[this.state.sortBy] ? this.state.sortVal : -this.state.sortVal)
+                .map((val)=>
+                        <li key={val._id}>
+                            <ButtonComponent 
+                                product={val} 
+                                handleCheck={this.handleCheck} 
+                                onClick={this.handleViewProduct}
+                            />
+                        </li>
+            )
+            }
             </ul>
             <div className="button-bar">
-            <button id="delete" onClick={this.handleDelete}>Delete</button>
-            <button className="submit-button" onClick={() => this.setState({inDetailMode: true, isAddingProduct: true})}>Add Product</button>
+                <button id="delete" onClick={this.handleDelete}>Delete</button>
+                <button className="submit-button" onClick={() => this.setState({inDetailMode: true, isAddingProduct: true})}>
+                    Add Product
+                </button>
             </div>
-            {this.state.inDetailMode && this.state.isAddingProduct ? <div onClick={this.toggleDetail} className='backdrop'> 
-            <Detail
-            
-            SubmitBar={<SubmitBar handleSubmit={this.handleAddProduct} submitName="Add"/>}
-            ImageUpload={<ImageUpload imageFile={this.state.detailProduct.image || ''} updateImage={this.handleImageUpload}/>}
-            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.detailProduct}
-                                categories={this.state.categories} stores={this.state.stores}  ErrorMessages={this.state.errorMessages}/>}
-            /></div> : this.state.inDetailMode && this.state.isViewingProduct ? 
+            {this.state.inDetailMode && this.state.isAddingProduct ?(
             <div onClick={this.toggleDetail} className='backdrop'> 
-            <Detail
-            
-            SubmitBar={<SubmitBar handleSubmit={this.handleUpdateProduct} submitName="Update"/>}
-            ImageUpload={<ImageUpload imageFile={this.state.detailProduct.image || ''} updateImage={this.handleImageUpload}/>}
-            DetailInfoFields={<DetailInfoFields handleInputChange={this.handleInputChange} product={this.state.detailProduct}
-                                categories={this.state.categories} stores={this.state.stores}  ErrorMessages={this.state.errorMessages}/>}
-            /></div> : null}
+                <Detail
+                    SubmitBar={
+                        <SubmitBar 
+                            handleSubmit={this.handleAddProduct} 
+                            submitName="Add"
+                        />
+                    }
+                    ImageUpload={
+                        <ImageUpload 
+                            SVG={productSVG} 
+                            imageFile={this.state.detailProduct.image || ''} 
+                            updateImage={this.handleImageUpload}
+                        />
+                    }
+                    DetailInfoFields={
+                        <DetailInfoFields 
+                            handleInputChange={this.handleInputChange} 
+                            product={this.state.detailProduct}
+                            categories={this.state.categories} 
+                            stores={this.state.stores}  
+                            ErrorMessages={this.state.errorMessages}
+                        />
+                    }
+                />
+            </div>
+            ) : this.state.inDetailMode && this.state.isViewingProduct ? ( 
+            <div onClick={this.toggleDetail} className='backdrop'> 
+                <Detail
+                    SubmitBar={
+                        <SubmitBar 
+                            handleSubmit={this.handleUpdateProduct} 
+                            submitName="Update"
+                        />
+                    }
+
+                    ImageUpload={
+                        <ImageUpload 
+                            SVG={productSVG} 
+                            imageFile={this.state.detailProduct.image || ''} 
+                            updateImage={this.handleImageUpload}
+                        />
+                    }
+
+                    DetailInfoFields={
+                        <DetailInfoFields 
+                            handleInputChange={this.handleInputChange} 
+                            product={this.state.detailProduct}
+                            categories={this.state.categories} 
+                            stores={this.state.stores}  
+                            ErrorMessages={this.state.errorMessages}
+                        />
+                    }
+                />
+            </div>
+            ) : null}
         </div>
         </Categories.Provider>
     ));
@@ -320,7 +385,7 @@ function SearchFilter(props){
     </Categories.Consumer>
 }
 
-function SortBar(props){
+export function SortBar(props){
     return <div 
     className="sortbar">
     <p></p>
@@ -334,7 +399,7 @@ function SortBar(props){
     </div> 
 }
 
-function ProductButtonComponent(props){
+export const ButtonComponent = React.forwardRef ((props, ref) =>{
 
     function handleMouseDown(e){
         if(e.target.type!='INPUT'){
@@ -358,8 +423,9 @@ function ProductButtonComponent(props){
         <div 
         className="listing-button" 
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}>
-        <p><input type="checkbox" onClick={props.handleCheck} onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
+        onMouseUp={handleMouseUp}
+        >
+        <p style={{visibility: props.checkboxVisibility || 'visible'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
         <p><img src={url} width='40px' height='40px'/></p>
         <p>{props.product.name}</p>
         <p>{props.product.price}</p>
@@ -369,7 +435,7 @@ function ProductButtonComponent(props){
         <p><input id='productID' type='hidden' value={props.product._id}/></p>
         </div> 
     );
-};
+});
 
 function Detail(props){
     return(
@@ -428,64 +494,6 @@ function DetailInfoFields(props){
         </div>
     );
 }
-
-function ImageUpload(props) {
-    let urls = new WeakMap()
-
-    let blobUrl = blob => {
-      if (urls.has(blob)) {
-        return urls.get(blob)
-      } else {
-        let url = URL.createObjectURL(blob)
-        urls.set(blob, url)
-        return url
-      }
-    }
-
-    
-    
-    let onDrag = event => {
-        event.preventDefault();
-      }
-    
-    let onDrop = event => {
-        event.preventDefault();
-        let file = event.dataTransfer.files[0];
-        props.updateImage(file);
-    }
-
-    let onClick = event => {
-        event.stopPropagation();
-        if(event.target.tagName=='DIV')
-            event.target.lastChild.click();
-        else if(event.target.tagName=='IMG')
-            event.target.parentNode.lastChild.click();
-    }
-
-    let onChange = event => {
-        event.preventDefault();
-        let file = event.target.files[0];
-        props.updateImage(file);
-    }
-    
-    let file  = props.imageFile;
-    let url;
-    if(file && file.type == 'Buffer'){
-        var data = btoa(String.fromCharCode.apply(null, file.data));
-        url = file ? `data:image/jpeg;base64,${data}`: productSVG;
-    }
-    else{
-        url = file && blobUrl(file);
-    }
-     return (
-        <div className="detail-image-banner" onDragOver={onDrag} onDrop={onDrop} onClick={onClick}>
-            <img src={url} onClick={onClick} alt="Drop an image!" style={!props.imageFile ? {display: 'none'}: {display: 'block'}}/>
-            <p style={props.imageFile ? {display: 'none'}: {display: 'block'}}>Drop or select an image</p>
-            <input type = "file" onChange={onChange} accept="image/x-png,image/gif,image/jpeg" style={{display: 'none'}}/>
-        </div>
-        
-      );
-  }
 
 function SubmitBar(props){
     return(

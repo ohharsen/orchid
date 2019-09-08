@@ -23,7 +23,8 @@
     display: flex;
     margin: 10px auto;
     width: 90%;
-    
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .search-bar{
@@ -33,12 +34,13 @@
     padding: 10px;
     border-radius: 5px;
     flex-shrink: 0;
+    min-width: 200px;
 }
 
 .filter-button{
     position: relative;
     padding: 10px 15px;
-    margin: 0 40px;
+    margin: 5px 40px;
     margin-right: 0;
     background: white;
     max-width: 20%;
@@ -54,15 +56,17 @@
     .filter-button{
         margin: 0 3px;
         padding: 10px 0;
+        width: 80px;
+        font-size: 12px;
     }
     .search-bar{
-        width: 40%;
+        width: 100%;
     }
 }
 
 .filter-button:focus{
     outline: none;
-    background: #f5f4f4,
+    background: #dbdada,
 }
 
 .filter-button .filter-tooltip-div::after {

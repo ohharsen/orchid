@@ -4,6 +4,7 @@ import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/detail.scss';
 import customerSVG from '../img/svg/users.svg';
+import ImageUpload from './Presentational Components/ImageUpload.component';
 
 export default class CustomerComponent extends React.Component{
     constructor(props){
@@ -48,7 +49,7 @@ export default class CustomerComponent extends React.Component{
                 this.setState({customers: response.data.customers, stores: response.data.stores, fetching: false, detail:{store: response.data.stores[0]._id}});
             }
             }).catch(err => {
-                this.setState({customers: [], stores: response.data.stores, fetching: false, detail:{store: response.data.stores[0]._id}});
+                this.setState({customers: [], stores: [], fetching: false, detail:{store: null}});
           });
     }
     handleSearchInput(e){
@@ -209,11 +210,12 @@ export default class CustomerComponent extends React.Component{
 
     render(){
         var custish;
-         var filters = this.state.filters;
+        var filters = this.state.filters;
         custish =JSON.parse(JSON.stringify(this.state)).customers;
         custish.forEach(val=> val.sales = !val.sales ? 0 : val.sales);
         custish = custish.filter((val) => val.name.toLowerCase().includes(this.state.searchText.toLowerCase()) || val.phone_number.replace(/\W/g,'').includes(this.state.searchText.replace(/\W/g,'')) || val.email.toLowerCase().includes(this.state.searchText.toLowerCase()) || val.card_number.includes(this.state.searchText) ? true : false);
         custish = custish.filter((val) => val.sales >= filters.minSales && val.sales <= filters.maxSales); 
+        //combine filters
         return (this.state.fetching? <SpinnerComponent /> : (
         <div className="container">
             <h1>CUSTOMERS</h1>
@@ -252,7 +254,7 @@ export default class CustomerComponent extends React.Component{
             <div onClick={this.toggleDetail} className='backdrop'> 
                 <Detail
                     SubmitBar={<SubmitBar handleSubmit={this.handleAdd} submitName="Add"/>}
-                    ImageUpload={<ImageUpload imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    ImageUpload={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
                     DetailInfoFields={
                         <DetailInfoFields 
                             handleInputChange={this.handleInputChange} 
@@ -266,7 +268,7 @@ export default class CustomerComponent extends React.Component{
             <div onClick={this.toggleDetail} className='backdrop'> 
                 <Detail 
                     SubmitBar={<SubmitBar handleSubmit={this.handleUpdate} submitName="Update"/>}
-                    ImageUpload={<ImageUpload imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    ImageUpload={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
                     DetailInfoFields={
                         <DetailInfoFields 
                             handleInputChange={this.handleInputChange} 
@@ -286,7 +288,7 @@ export default class CustomerComponent extends React.Component{
 function SearchFilter(props){
    return (
      <div className="search-filter-container">
-        <input type="search" className="search-bar" placeholder="Enter the Name or SKU..." onChange={props.onSearchInput} value={props.searchText}/>
+        <input type="search" className="search-bar" placeholder="Enter the customer's name, phone number, email, ..." onChange={props.onSearchInput} value={props.searchText}/>
         <button className="filter-button">
             Purchases ▼
             <div className="filter-tooltip-div">
@@ -305,7 +307,7 @@ function SearchFilter(props){
     </div>)
 }
 
-function SortBar(props){
+export function SortBar(props){
     return <div 
     className="sortbar">
     <p></p>
@@ -320,7 +322,7 @@ function SortBar(props){
     </div> 
 }
 
-function ButtonComponent(props){
+export const ButtonComponent = React.forwardRef((props,ref)=>{
 
     function handleMouseDown(e){
         if(e.target.type!='INPUT'){
@@ -343,12 +345,13 @@ function ButtonComponent(props){
     let date = new Date(props.customer.date_joined);
     let displayDate = //(date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth())  + '/' + (date.getDay() < 10 ? '0' + date.getDay() : date.getDay()) + '/' + date.getFullYear(); 
     (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
-    return(
+   return(
         <div 
         className="listing-button" 
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}>
-        <p><input type="checkbox" onClick={props.handleCheck} onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
+        onMouseUp={handleMouseUp}
+        >
+        <p style={{visibility: props.checkboxVisibility  || 'visible'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
         <p><img src={url} width='40px' height='40px'/></p>
         <p>{props.customer.first_name + ' ' + props.customer.last_name}</p>
         <p>{props.customer.phone_number}</p>
@@ -359,7 +362,7 @@ function ButtonComponent(props){
         <p><input id='customerID' type='hidden' value={props.customer._id}/></p>
         </div> 
     );
-};
+});
 
 function Detail(props){
     return(
@@ -374,7 +377,6 @@ function Detail(props){
 }
 
 function DetailInfoFields(props){
-    console.log(props);
     let date = new Date(props.customer.date_joined);
     let displayDate = date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString().padStart(2, 0) + '-' + date.getDate().toString().padStart(2, 0);
     return(
@@ -437,63 +439,6 @@ function DetailInfoFields(props){
     );
 }
 
-function ImageUpload(props) {
-    let urls = new WeakMap()
-
-    let blobUrl = blob => {
-      if (urls.has(blob)) {
-        return urls.get(blob)
-      } else {
-        let url = URL.createObjectURL(blob)
-        urls.set(blob, url)
-        return url
-      }
-    }
-
-    
-    
-    let onDrag = event => {
-        event.preventDefault();
-      }
-    
-    let onDrop = event => {
-        event.preventDefault();
-        let file = event.dataTransfer.files[0];
-        props.updateImage(file);
-    }
-
-    let onClick = event => {
-        event.stopPropagation();
-        if(event.target.tagName=='DIV')
-            event.target.lastChild.click();
-        else if(event.target.tagName=='IMG')
-            event.target.parentNode.lastChild.click();
-    }
-
-    let onChange = event => {
-        event.preventDefault();
-        let file = event.target.files[0];
-        props.updateImage(file);
-    }
-    
-    let file  = props.imageFile;
-    let url;
-    if(file && file.type == 'Buffer'){
-        var data = btoa(String.fromCharCode.apply(null, file.data));
-        url = file ? `data:image/jpeg;base64,${data}`: customerSVG;
-    }
-    else{
-        url = file && blobUrl(file);
-    }
-     return (
-        <div className="detail-image-banner" onDragOver={onDrag} onDrop={onDrop} onClick={onClick}>
-            <img src={url} onClick={onClick} alt="Drop an image!" style={!props.imageFile ? {display: 'none'}: {display: 'block'}}/>
-            <p style={props.imageFile ? {display: 'none'}: {display: 'block'}}>Drop or select an image</p>
-            <input type = "file" onChange={onChange} accept="image/x-png,image/gif,image/jpeg" style={{display: 'none'}}/>
-        </div>
-        
-      );
-  }
 
 function SubmitBar(props){
     return(
