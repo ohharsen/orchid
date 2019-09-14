@@ -30,7 +30,6 @@ router.get('/', function(req,res,next){
             User.findById(req.user._id)
                 .populate('stores')
                 .exec(function(err, user){
-                    console.log({stores: user.stores, customers: customers});
                         res.send({stores: user.stores, customers: customers});
                 })
         });
@@ -41,7 +40,6 @@ router.get('/', function(req,res,next){
 });
 
 router.post('/new', function(req, res, next){
-    console.log(req);
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             console.log(err)
@@ -49,7 +47,6 @@ router.post('/new', function(req, res, next){
             console.log(err)
         }
     req.body.customer = JSON.parse(req.body.customer);
-    console.log(req.file);
      if(req.file){
       var image = fs.readFileSync(req.file.path);
       req.body.customer.image = image;

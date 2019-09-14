@@ -146,7 +146,7 @@
     box-shadow: 5px 5px 6px rgba(0,0,0,0.16);
     padding: 2px;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     margin: 7px auto;
     width: 95%;
     text-decoration: none;
@@ -163,10 +163,17 @@
 
    
     p{
+        text-overflow: ellipsis;
+        flex-grow: 1;
         margin: 0;
-        width: calc(100%/6);
+        width: calc(100%/7);
         text-align: center;
         overflow: hidden;
+        white-space: nowrap;
+    }
+    p:first-child{
+        min-width: 40px;
+        flex-grow: 0;
     }
     @media (max-width: 450px){
         p{
@@ -280,11 +287,17 @@ input[type="checkbox"]:checked{
     font-family: Lato;
     font-size: 16px;
     p{
+        flex-grow: 1;
         margin: 0;
-        width: calc(100%/6);
+        text-overflow: ellipsis;
+        width: calc(100%/7);
         text-align: center;
         cursor: pointer;
-        overflow: hidden;
+        white-space: nowrap;
+    }
+    p:first-child{
+        min-width: 80px;
+        flex-grow: 0;
     }
 }
 

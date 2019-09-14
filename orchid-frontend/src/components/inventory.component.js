@@ -4,7 +4,8 @@ import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/detail.scss';
 import productSVG from '../img/svg/product.svg';
-import ImageUpload from './Presentational Components/ImageUpload.component';
+import {SubmitBar, Detail, ImageUpload} from './Presentational Components/DetailComponents.component';
+
 
 const Categories = React.createContext();
 
@@ -77,7 +78,7 @@ export default class InventoryComponent extends React.Component{
                 stateBuf.filters.categories.push(e.target.id);
             }
             else{
-                stateBuf.filters.categories.splice(index);
+                stateBuf.filters.categories.splice(index, 1);
             }
             stateBuf.filters.maxPrice = Infinity;
             stateBuf.filters.maxQuantity = Infinity;
@@ -279,7 +280,7 @@ export default class InventoryComponent extends React.Component{
                             submitName="Add"
                         />
                     }
-                    ImageUpload={
+                    Image={
                         <ImageUpload 
                             SVG={productSVG} 
                             imageFile={this.state.detailProduct.image || ''} 
@@ -307,7 +308,7 @@ export default class InventoryComponent extends React.Component{
                         />
                     }
 
-                    ImageUpload={
+                    Image={
                         <ImageUpload 
                             SVG={productSVG} 
                             imageFile={this.state.detailProduct.image || ''} 
@@ -388,14 +389,13 @@ function SearchFilter(props){
 export function SortBar(props){
     return <div 
     className="sortbar">
-    <p></p>
+    <p style={{display: props.checkboxVisibility || 'block'}}></p>
     <p>Image</p>
     <p onClick={props.onClick}>{props.sortBy == 'name' && props.sortVal == 1 ? <u>Name ▲</u> : props.sortBy == 'name' ? <u>Name ▼</u> : 'Name ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'price' && props.sortVal == 1 ? <u>Price ▲</u> : props.sortBy == 'price' ? <u>Price ▼</u> : 'Price ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'quantities' && props.sortVal == 1 ? <u>Quantities ▲</u> : props.sortBy == 'quantities' ? <u>Quantities ▼</u> : 'Quantities ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'cost' && props.sortVal == 1 ? <u>Cost ▲</u> : props.sortBy == 'cost' ? <u>Cost ▼</u> : 'Cost ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'sku' && props.sortVal == 1 ? <u>SKU ▲</u> : props.sortBy == 'sku' ? <u>SKU ▼</u> : 'SKU ▼'}</p>
-    <p></p>
     </div> 
 }
 
@@ -425,31 +425,19 @@ export const ButtonComponent = React.forwardRef ((props, ref) =>{
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         >
-        <p style={{visibility: props.checkboxVisibility || 'visible'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
+        <p style={{display: props.checkboxVisibility || 'block'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
         <p><img src={url} width='40px' height='40px'/></p>
         <p>{props.product.name}</p>
         <p>{props.product.price}</p>
         <p>{props.product.quantities}</p>
         <p>{props.product.cost}</p>
         <p>{props.product.sku}</p>
-        <p><input id='productID' type='hidden' value={props.product._id}/></p>
+        <p style={{display: 'none'}}><input id='productID' type='hidden' value={props.product._id}/></p>
         </div> 
     );
 });
 
-function Detail(props){
-    return(
-    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
-            <div className="detail-top-bar">
-                {props.DetailInfoFields}
-                {props.ImageUpload}
-            </div>
-            {props.SubmitBar}
-    </div>
-    );
-}
-
-function DetailInfoFields(props){
+export function DetailInfoFields(props){
     return(
         <div className="detail-info-fields">
         {props.ErrorMessages?
@@ -461,21 +449,21 @@ function DetailInfoFields(props){
                     )}
         </ul> </React.Fragment>: ''}
             <label htmlFor='name'>Name*</label>
-            <input required type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.name || ''}/>
+            <input required disabled={props.disabled || false} type="text" id="name" name="name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.name || ''}/>
             <label htmlFor='sku'>SKU*</label>
-            <input type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.sku || ''}/>
+            <input required disabled={props.disabled || false} type="text" id="sku" name="sku" style={{width: '100%'}} onChange={props.handleInputChange} value={props.product.sku || ''}/>
             <div className="smaller-inputs">
             <p>
             <label htmlFor='price'>Price*</label>
-            <input type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.price || ''}/>
+            <input required disabled={props.disabled || false} type="number" id="price" name="price" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.price || ''}/>
             </p>
             <p>
             <label htmlFor='cost'>Cost</label>
-            <input type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.cost || ''}/> 
+            <input disabled={props.disabled || false} type="number" id="cost" name="cost" min={0} step={0.01} onChange={props.handleInputChange} value={props.product.cost || ''}/> 
             </p>
             <p>
                 <label htmlFor="category">Categories</label>
-                <select name="category" className="detail-select" value={props.product.category && capitalize(props.product.category.name)} onChange={props.handleInputChange}>
+                <select disabled={props.disabled || false} name="category" className="detail-select" value={props.product.category && capitalize(props.product.category.name)} onChange={props.handleInputChange}>
                     {props.categories.map((category)=><option key={category._id}>{capitalize(category.name)}</option>)}
                 </select>
             </p>
@@ -485,7 +473,7 @@ function DetailInfoFields(props){
                 {props.stores.map((store, index)=>
                 <li key={store._id}>
                     <label htmlFor={`store_${store.name}`}> {capitalize(store.name)}:</label>
-                        <input type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`} value={props.product.quantities && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)] && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)].quantity || ''}/>
+                        <input disabled={props.disabled || false} type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`} value={props.product.quantities && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)] && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)].quantity || 0}/>
                 </li>)}
             </ul>
             </section>
@@ -494,19 +482,6 @@ function DetailInfoFields(props){
         </div>
     );
 }
-
-function SubmitBar(props){
-    return(
-        <div className="detail-submit-bar">
-                <input type="submit" onClick={props.handleSubmit} value={props.submitName} className="submit-button"/>   
-        </div>
-    );
-}
-
-
-
-
-
 
 //----------------------------Helper Functions-----------------------
  function capitalize(str){

@@ -4,7 +4,8 @@ import SpinnerComponent from './spinner.component';
 import '../stylesheets/listing.scss';
 import '../stylesheets/detail.scss';
 import customerSVG from '../img/svg/users.svg';
-import ImageUpload from './Presentational Components/ImageUpload.component';
+import {SubmitBar, Detail, ImageUpload} from './Presentational Components/DetailComponents.component';
+
 
 export default class CustomerComponent extends React.Component{
     constructor(props){
@@ -203,7 +204,8 @@ export default class CustomerComponent extends React.Component{
         var sortBy = e.target.textContent;
         sortBy = sortBy.substring(0, sortBy.length-2).toLowerCase().replace(' ', '_');
         var sortVal = 1;
-        if(sortBy == this.state.sortBy)
+        if(sortBy === 'purchases') sortBy = 'sales';
+        if(sortBy === this.state.sortBy)
             sortVal = -(this.state.sortVal);
         this.setState({sortBy: sortBy, sortVal: sortVal});
     }
@@ -254,7 +256,7 @@ export default class CustomerComponent extends React.Component{
             <div onClick={this.toggleDetail} className='backdrop'> 
                 <Detail
                     SubmitBar={<SubmitBar handleSubmit={this.handleAdd} submitName="Add"/>}
-                    ImageUpload={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    Image={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
                     DetailInfoFields={
                         <DetailInfoFields 
                             handleInputChange={this.handleInputChange} 
@@ -268,7 +270,7 @@ export default class CustomerComponent extends React.Component{
             <div onClick={this.toggleDetail} className='backdrop'> 
                 <Detail 
                     SubmitBar={<SubmitBar handleSubmit={this.handleUpdate} submitName="Update"/>}
-                    ImageUpload={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
+                    Image={<ImageUpload SVG={customerSVG} imageFile={this.state.detail.image || ''} updateImage={this.handleImageUpload}/>}
                     DetailInfoFields={
                         <DetailInfoFields 
                             handleInputChange={this.handleInputChange} 
@@ -310,15 +312,14 @@ function SearchFilter(props){
 export function SortBar(props){
     return <div 
     className="sortbar">
-    <p></p>
+    <p style={{display: props.checkboxVisibility || 'block'}}></p>
     <p>Image</p>
     <p onClick={props.onClick}>{props.sortBy == 'name' && props.sortVal == 1 ? <u>Name ▲</u> : props.sortBy == 'name' ? <u>Name ▼</u> : 'Name ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'phone_number' && props.sortVal == 1 ? <u>Phone Number ▲</u> : props.sortBy == 'phone_number' ? <u>Phone Number ▼</u> : 'Phone Number ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'email' && props.sortVal == 1 ? <u>Email ▲</u> : props.sortBy == 'email' ? <u>Email ▼</u> : 'Email ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'date_joined' && props.sortVal == 1 ? <u>Date Joined ▲</u> : props.sortBy == 'date_joined' ? <u>Date Joined ▼</u> : 'Date Joined ▼'}</p>
     <p onClick={props.onClick}>{props.sortBy == 'card_number' && props.sortVal == 1 ? <u>Card Number ▲</u> : props.sortBy == 'card_number' ? <u>Card Number ▼</u> : 'Card Number ▼'}</p>
-    <p onClick={props.onClick}>{props.sortBy == 'sales' && props.sortVal == 1 ? <u>Purchaes ▲</u> : props.sortBy == 'sales' ? <u>Purchases ▼</u> : 'Purchases ▼'}</p>
-    <p></p>
+    <p onClick={props.onClick}>{props.sortBy == 'sales' && props.sortVal == 1 ? <u>Purchases ▲</u> : props.sortBy == 'sales' ? <u>Purchases ▼</u> : 'Purchases ▼'}</p>
     </div> 
 }
 
@@ -351,7 +352,7 @@ export const ButtonComponent = React.forwardRef((props,ref)=>{
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         >
-        <p style={{visibility: props.checkboxVisibility  || 'visible'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
+        <p style={{display: props.checkboxVisibility  || 'block'}}><input type="checkbox" onClick={props.handleCheck}  onMouseDown={(e)=>e.stopPropagation()} onMouseUp={(e)=>e.stopPropagation()}/></p>
         <p><img src={url} width='40px' height='40px'/></p>
         <p>{props.customer.first_name + ' ' + props.customer.last_name}</p>
         <p>{props.customer.phone_number}</p>
@@ -359,24 +360,12 @@ export const ButtonComponent = React.forwardRef((props,ref)=>{
         <p>{displayDate}</p>
         <p>{props.customer.card_number}</p>
         <p>{props.customer.sales}</p>
-        <p><input id='customerID' type='hidden' value={props.customer._id}/></p>
+        <p style={{display: 'none'}}><input id='customerID' type='hidden' value={props.customer._id}/></p>
         </div> 
     );
 });
 
-function Detail(props){
-    return(
-    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
-            <div className="detail-top-bar">
-                {props.DetailInfoFields}
-                {props.ImageUpload}
-            </div>
-            {props.SubmitBar}
-    </div>
-    );
-}
-
-function DetailInfoFields(props){
+export function DetailInfoFields(props){
     let date = new Date(props.customer.date_joined);
     let displayDate = date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString().padStart(2, 0) + '-' + date.getDate().toString().padStart(2, 0);
     return(
@@ -393,57 +382,48 @@ function DetailInfoFields(props){
         <ul className="forms-listing">
             <li>
                 <label htmlFor='first_name'>First Name</label>
-                <input required type="text" id="first_name" name="first_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.first_name || ''}/>
+                <input required disabled={props.disabled || false} type="text" id="first_name" name="first_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.first_name || ''}/>
             </li>
 
             <li>
                 <label htmlFor='last_name'>Last Name</label>
-                <input required type="text" id="last_name" name="last_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.last_name || ''}/>
+                <input required disabled={props.disabled || false} type="text" id="last_name" name="last_name" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.last_name || ''}/>
             </li>
 
             <li style={{display: "flex", flexGrow: 1, justifyContent: 'space-between'}}>
                 <div>
                     <label htmlFor='phone_number'>Phone Number</label>
-                    <input required type="text" id="phone_number" name="phone_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.phone_number || ''}/>
+                    <input required disabled={props.disabled || false} type="text" id="phone_number" name="phone_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.phone_number || ''}/>
                 </div>
                 <div>
                     <label htmlFor='email'>Email</label>
-                    <input required type="email" id="email" name="email" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.email || ''}/>
+                    <input required disabled={props.disabled || false} type="email" id="email" name="email" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.email || ''}/>
                 </div>
             </li>
 
             <li>
                 <label htmlFor='card_number'>Card Number</label>
-                <input required type="text" id="card_number" name="card_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.card_number || ''}/>
+                <input required disabled={props.disabled || false} type="text" id="card_number" name="card_number" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.card_number || ''}/>
             </li>
 
             <li style={{display: "flex", flexGrow: 1, justifyContent: 'space-between'}}>
                 <div>
                     <label htmlFor="store">Store</label>
-                    <select name="store" className="detail-select" value={props.customer.store && capitalize(props.stores[props.stores.map(val=>val._id).indexOf(props.customer.store)].name)} onChange={props.handleInputChange}>
+                    <select disabled={props.disabled || false} name="store" className="detail-select" value={props.customer.store && capitalize(props.stores[props.stores.map(val=>val._id).indexOf(props.customer.store)].name)} onChange={props.handleInputChange}>
                         {props.stores.map((store)=><option key={store._id}>{capitalize(store.name)}</option>)}
                     </select>
                  </div>
                 <div>
                     <label htmlFor='sales'>Purchases</label>
-                    <input required type="text" id="sales" name="sales" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.sales || 0} disabled/>
+                    <input required disabled={props.disabled || false} type="text" id="sales" name="sales" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.sales || 0} disabled/>
                 </div>
             </li>
 
             <li>
                 <label htmlFor='date_joined'>Date Joined</label>
-                <input required type="date" id="date_joined" name="date_joined" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.date_joined && displayDate || ''} disabled/>
+                <input required disabled={props.disabled || false} type="date" id="date_joined" name="date_joined" style={{width: '100%'}} onChange={props.handleInputChange} value={props.customer.date_joined && displayDate || ''} disabled/>
             </li>
         </ul>
-        </div>
-    );
-}
-
-
-function SubmitBar(props){
-    return(
-        <div className="detail-submit-bar">
-                <input type="submit" onClick={props.handleSubmit} value={props.submitName} className="submit-button"/>   
         </div>
     );
 }

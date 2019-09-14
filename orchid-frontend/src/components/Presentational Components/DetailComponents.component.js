@@ -1,6 +1,26 @@
 import React from 'react';
 
-export default function ImageUpload(props) {
+export function SubmitBar(props){
+    return(
+        <div className="detail-submit-bar">
+                <input type="submit" onClick={props.handleSubmit} value={props.submitName} className="submit-button"/>   
+        </div>
+    );
+}
+
+export function Detail(props){
+    return(
+    <div onClick={(e)=>e.stopPropagation()} className = 'detail-div'>
+            <div className="detail-top-bar">
+                {props.DetailInfoFields}
+                {props.Image}
+            </div>
+            {props.SubmitBar}
+    </div>
+    );
+}
+
+export function ImageUpload(props) {
     let urls = new WeakMap()
 
     let blobUrl = blob => {

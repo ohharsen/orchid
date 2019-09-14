@@ -7,10 +7,11 @@ var options = {discriminatorKey: 'type'};
 var genericTransactionSchema = new Schema({
     date: {
         type: Date, 
-        required: true
+        default: new Date(), 
+        immutable: true,
     },
-    product: {
-        type: Schema.Types.ObjectId, 
+    products: {
+        type: [Schema.Types.ObjectId], 
         ref: 'Product', 
         required: true
     },
@@ -34,7 +35,7 @@ var genericTransactionSchema = new Schema({
 
  var SellSchema =new Schema(
      {
-         price_sold: { 
+         discount: { 
           type: Number,  
           required: true,  
           min: 0

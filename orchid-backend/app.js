@@ -6,6 +6,7 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var cors = require('cors'); 
+var bodyParser = require('body-parser');
 
 
 var Product = require('./models/product');
@@ -20,6 +21,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var inventoryRouter = require('./routes/inventory');
 var customerRouter = require('./routes/customers');
+var transactionRouter = require('./routes/transactions');
 
 var app = express();
 
@@ -97,12 +99,16 @@ app.use(cors({
   credentials: true,
 })); //Debug
 
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 // TODO set up session expiration
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/inventory', inventoryRouter);
 app.use('/customers', customerRouter);
+app.use('/transactions', transactionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
