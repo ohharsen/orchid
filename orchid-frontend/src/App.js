@@ -1,13 +1,14 @@
 import React from 'react';
 import axios from 'axios';
-import {BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 import LoginComponent from './components/login.component';
 import DashboardComponent from './components/dashboard.component';
 import FrameComponent from './components/frame.component';
 import SpinnerComponent from './components/spinner.component';
 import InventoryComponent from './components/inventory.component';
 import CustomersComponent from './components/customers.component';
-import CheckoutComponent from './components/checkout.component'
+import CheckoutComponent from './components/checkout.component';
+import ReportsComponent from './components/reports.component';
 
 class App extends React.Component {
   constructor(props){ 
@@ -44,6 +45,7 @@ class App extends React.Component {
           <Route exact path = "/inventory" component={InventoryComponent} />
           <Route exact path = "/customers" component={CustomersComponent} />
           <Route exact path = "/checkout" component={CheckoutComponent} />
+          <Route path = "/reports" component={ReportsComponent} />
         </Switch>
       </FrameComponent>
     )

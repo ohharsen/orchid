@@ -10,11 +10,17 @@ var genericTransactionSchema = new Schema({
         default: new Date(), 
         immutable: true,
     },
-    products: {
-        type: [Schema.Types.ObjectId], 
+    products: [{
+    product: {
+        type: Schema.Types.ObjectId, 
         ref: 'Product', 
         required: true
     },
+    quantity: {
+        type: Number,
+        required: true
+    }
+}],
     customer: {
         type: Schema.Types.ObjectId, 
         ref: 'Customer'

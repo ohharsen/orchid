@@ -265,6 +265,7 @@ export default class CheckoutComponent extends React.Component{
             value.quantities = value.quantities.reduce((acc=0, val) => acc+val.quantity, 0)
             });
         productish = productish.filter((val) => val.name.includes(this.state.searchText) || val.sku.includes(this.state.searchText) ? true : false);
+        custish = custish.filter((val) => val.store === this.state.store);
         custish = custish.filter((val) => val.name.toLowerCase().includes(this.state.searchText.toLowerCase()) || val.phone_number.replace(/\W/g,'').includes(this.state.searchText.replace(/\W/g,'')) || val.email.toLowerCase().includes(this.state.searchText.toLowerCase()) || val.card_number.includes(this.state.searchText) ? true : false);
         return(this.state.fetching? <SpinnerComponent /> : (
         <div className="checkout-container">

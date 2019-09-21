@@ -180,7 +180,15 @@ export default class CustomerComponent extends React.Component{
     }
 
     toggleDetail(){
-            this.setState({inDetailMode: false, isAdding: false, isViewing: false, detail:{store: this.state.stores[0]._id}}); 
+            this.setState({
+                inDetailMode: false,
+                isAdding: false, 
+                isViewing: false, 
+                detail:{
+                    store: this.state.stores[0]._id
+                },
+                errorMessages: null
+            }); 
     }
 
     handleInputChange(e){

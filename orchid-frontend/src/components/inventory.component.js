@@ -184,7 +184,16 @@ export default class InventoryComponent extends React.Component{
     }
 
     toggleDetail(){
-            this.setState({inDetailMode: false, isAddingProduct: false, isViewingProduct: false, detailProduct: { quantities: null, category: this.state.categories[0] }}); 
+            this.setState({
+                inDetailMode: false, 
+                isAddingProduct: false, 
+                isViewingProduct: false, 
+                detailProduct: { 
+                    quantities: null, 
+                    category: this.state.categories[0] 
+                },
+                errorMessages: null
+            }); 
     }
 
     handleInputChange(e){
