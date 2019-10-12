@@ -106,7 +106,6 @@ function TimeCounter(props){
     return(
     <React.Fragment>
         <h1>{(props.hours < 10 ? '0': '') + props.hours}:{(props.minutes < 10 ? '0': '') + props.minutes}:{(props.seconds < 10 ? '0': '') + props.seconds}</h1>
-        <h2>{Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').reverse()[0].toString().replace('_', ' ')}</h2>
     </React.Fragment>
     )
 }

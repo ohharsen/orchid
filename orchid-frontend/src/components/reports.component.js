@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {BrowserRouter as Router, Route, Switch, NavLink, Redirect} from 'react-router-dom';
+import DatePicker from 'react-datepicker';
 import '../stylesheets/reports.scss';
+import "react-datepicker/dist/react-datepicker.css";
+
 
 export default function ReportsComponent(props) {
         console.log(`${props.match.path}/`);
@@ -28,7 +31,10 @@ export default function ReportsComponent(props) {
 }
 
 function SalesReports(props){
-    const [state, setState] = useState({});
+    const [state, setState] = useState({
+        begginingDate: new Date(),
+        endingDate: new Date()
+    });
 
     useEffect(()=>{
         axios.get('http://localhost:3001/transactions/').then((response) => {
@@ -38,7 +44,9 @@ function SalesReports(props){
                     returnTransactions: response.data.returnTransactions, 
                     stores: response.data.stores, 
                     categories: response.data.categories,
-                    transactions: response.data.transactions
+                    transactions: response.data.transactions,
+                    begginingDate: new Date(),
+                    endingDate: new Date()
                 }
                 );
             }
@@ -46,11 +54,33 @@ function SalesReports(props){
                 console.log(err);
           });
     }, []);
+
+    function handleBegDateChange(date){
+        var newState = JSON.parse(JSON.stringify(state));
+        newState.begginingDate = date;
+        newState.endingDate = state.endingDate;
+        console.log(newState);
+        setState(newState);
+    }
+
+    function handleEndDateChange(date){
+        var newState = JSON.parse(JSON.stringify(state));
+        newState.begginingDate = state.begginingDate;
+        newState.endingDate = date;
+        setState(newState);
+    }
     console.log(state);
+    let totalQuantity = 0;
+    let totalSales = 0;
     return (
         <React.Fragment>
             <h1>SALES REPORTS</h1>
-            <SalesFilters />
+            <SalesFilters
+                begginingDate={state.begginingDate}
+                endingDate={state.endingDate}
+                handleBegDateChange={handleBegDateChange}
+                handleEndDateChange={handleEndDateChange}
+             />
             <div className="reports-table">
                 <div className="table-header">
                     <ul className="table-row" style={{height: 30, lineHeight: 2}}>
@@ -63,75 +93,20 @@ function SalesReports(props){
                                 </ul>
                     </div>
                 <div className="table-main">
-                    {state.transactions && state.transactions.map((val)=>{
+                    {state.transactions && state.transactions
+                    .filter((val)=>{
+                        let date = new Date(val.date);
+                        return state.begginingDate <= date && state.endingDate >= date;
+                    })
+                    .map((val)=>{
                     let date = new Date(val.date);
                     let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
                 
                         return (
                             <ul className="table-row" key={val._id}>
                                 <li>{val._id}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + val.quantity, 0)}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + (val.quantity*val.product.price), 0)}</li>
-                                <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
-                                <li>{val.store.name}</li>
-                                <li>{displayDate}</li>
-                            </ul>
-                        );
-                    })}
-                    {state.transactions && state.transactions.map((val)=>{
-                    let date = new Date(val.date);
-                    let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
-                
-                        return (
-                            <ul className="table-row" key={val._id}>
-                                <li>{val._id}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + val.quantity, 0)}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + (val.quantity*val.product.price), 0)}</li>
-                                <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
-                                <li>{val.store.name}</li>
-                                <li>{displayDate}</li>
-                            </ul>
-                        );
-                    })}
-                    {state.transactions && state.transactions.map((val)=>{
-                    let date = new Date(val.date);
-                    let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
-                
-                        return (
-                            <ul className="table-row" key={val._id}>
-                                <li>{val._id}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + val.quantity, 0)}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + (val.quantity*val.product.price), 0)}</li>
-                                <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
-                                <li>{val.store.name}</li>
-                                <li>{displayDate}</li>
-                            </ul>
-                        );
-                    })}
-                    {state.transactions && state.transactions.map((val)=>{
-                    let date = new Date(val.date);
-                    let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
-                
-                        return (
-                            <ul className="table-row" key={val._id}>
-                                <li>{val._id}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + val.quantity, 0)}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + (val.quantity*val.product.price), 0)}</li>
-                                <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
-                                <li>{val.store.name}</li>
-                                <li>{displayDate}</li>
-                            </ul>
-                        );
-                    })}
-                    {state.transactions && state.transactions.map((val)=>{
-                    let date = new Date(val.date);
-                    let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
-                
-                        return (
-                            <ul className="table-row" key={val._id}>
-                                <li>{val._id}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + val.quantity, 0)}</li>
-                                <li>{val.products.reduce((acc=0, val) => acc + (val.quantity*val.product.price), 0)}</li>
+                                <li>{val.products.reduce((acc=0, val) => {totalQuantity+=val.quantity; return acc + val.quantity}, 0)}</li>
+                                <li>{val.products.reduce((acc=0, val) => {totalSales+=(val.quantity*val.product.price); return acc + (val.quantity*val.product.price)}, 0)}</li>
                                 <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
                                 <li>{val.store.name}</li>
                                 <li>{displayDate}</li>
@@ -142,8 +117,96 @@ function SalesReports(props){
                 <div className="table-footer">
                  <ul className="table-row" style={{height: 30, lineHeight: 2}}>
                                     <li style={{flexGrow: 0}}><b>Total</b></li>
-                                    <li style={{flexGrow: 0}}><b>85</b></li>
-                                    <li style={{flexGrow: 0}}><b>8500</b></li>
+                                    <li style={{flexGrow: 0}}><b>{totalQuantity}</b></li>
+                                    <li style={{flexGrow: 0}}><b>${totalSales}</b></li>
+            
+                </ul>
+                </div>
+            </div> 
+        </React.Fragment>
+    );
+}
+
+
+function LowStockReports(props){
+    const [state, setState] = useState({
+        begginingDate: new Date(),
+        endingDate: new Date()
+    });
+
+    useEffect(()=>{
+        axios.get('http://localhost:3001/inventory/').then((response) => {
+            if(response.status === 200){
+                setState({
+                    products: response.data.products,
+                    stores: response.data.stores, 
+                    categories: response.data.categories,
+                }
+                );
+            }
+            }).catch(err => {
+                console.log(err);
+          });
+    }, []);
+
+    function handleBegDateChange(date){
+        var newState = JSON.parse(JSON.stringify(state));
+        newState.begginingDate = date;
+        newState.endingDate = state.endingDate;
+        console.log(newState);
+        setState(newState);
+    }
+
+    function handleEndDateChange(date){
+        var newState = JSON.parse(JSON.stringify(state));
+        newState.begginingDate = state.begginingDate;
+        newState.endingDate = date;
+        setState(newState);
+    }
+    console.log(state);
+    let totalQuantity = 0;
+    let totalSales = 0;
+    return (
+        <React.Fragment>
+            <h1>LOW STOCK ITEMS</h1>
+            <div className="reports-table">
+                <div className="table-header">
+                    <ul className="table-row" style={{height: 30, lineHeight: 2}}>
+                                    <li>Transaction ID</li>
+                                    <li>Items Quantity</li>
+                                    <li>Sale Amount</li>
+                                    <li>Customer</li>
+                                    <li>Store</li>
+                                    <li>Date</li>
+                                </ul>
+                    </div>
+                <div className="table-main">
+                    {state.transactions && state.transactions
+                    .filter((val)=>{
+                        let date = new Date(val.date);
+                        return state.begginingDate <= date && state.endingDate >= date;
+                    })
+                    .map((val)=>{
+                    let date = new Date(val.date);
+                    let displayDate = (date.getMonth() + 1).toString().padStart(2, 0) + '/' + date.getDate().toString().padStart(2, 0) + '/' + date.getFullYear().toString();
+                
+                        return (
+                            <ul className="table-row" key={val._id}>
+                                <li>{val._id}</li>
+                                <li>{val.products.reduce((acc=0, val) => {totalQuantity+=val.quantity; return acc + val.quantity}, 0)}</li>
+                                <li>{val.products.reduce((acc=0, val) => {totalSales+=(val.quantity*val.product.price); return acc + (val.quantity*val.product.price)}, 0)}</li>
+                                <li>{val.customer ? val.customer.first_name + ' ' + val.customer.last_name: 'Guest'}</li>
+                                <li>{val.store.name}</li>
+                                <li>{displayDate}</li>
+                            </ul>
+                        );
+                    })}
+                </div>
+                <div className="table-footer">
+                 <ul className="table-row" style={{height: 30, lineHeight: 2}}>
+                                    <li style={{flexGrow: 0}}><b>Total</b></li>
+                                    <li style={{flexGrow: 0}}><b>{totalQuantity}</b></li>
+                                    <li style={{flexGrow: 0}}><b>${totalSales}</b></li>
             
                 </ul>
                 </div>
@@ -153,25 +216,35 @@ function SalesReports(props){
 }
 
 function SalesFilters(props){
+    const [selectedDate, setSelectedDate] = useState(new Date());
     return(
         <React.Fragment>
          <div className="search-filter-container" style={{width: '70%'}}>
             <button className="filter-button">
-                Price ▼
-                <div className="filter-tooltip-div">
-                    
+                From Date ▼
+                <div className="filter-tooltip-div" style={{width: 250, marginLeft: -125}}>
+                    <DatePicker
+                        selectsStart
+                        startDate={props.begginingDate}
+                        endDate={props.endingDate}
+                        selected={props.begginingDate}
+                        onChange={date => props.handleBegDateChange(date)}
+                        inline
+                    />
                 </div>
             </button>
             <button className="filter-button">
-                Price ▼
-                <div className="filter-tooltip-div">
-                    
-                </div>
-            </button>
-            <button className="filter-button">
-                Price ▼
-                <div className="filter-tooltip-div">
-                    
+                To Date ▼
+                <div className="filter-tooltip-div" style={{width: 250, marginLeft: -125}}>
+                    <DatePicker
+                        selectsEnd
+                        startDate={props.begginingDate}
+                        endDate={props.endingDate}
+                        minDate={props.begginingDate}
+                        selected={props.endingDate}
+                        onChange={date => props.handleEndDateChange(date)}
+                        inline
+                    />
                 </div>
             </button>
          </div>
@@ -181,9 +254,7 @@ function SalesFilters(props){
 }
 
 
-function LowStockReports(props){
-    return(
-        <h1>Low Stock</h1>
-    );
-}
+
+
+
 
