@@ -1,0 +1,4 @@
+#The user must run npm install to install the necessary modules
+node_modules
+
+public/images

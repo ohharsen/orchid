@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  font-family: Lato;
+}
+
+body  h1, h2, h3, h4, h5, h6{
+    font-weight: normal;
+  }
+
+*::-webkit-scrollbar {width: 7px; height: 0;}
+*::-webkit-scrollbar-track {margin: 54px 0 53px}
+*::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    box-shadow: rgba(255,255,255,0.3) 0 0 0 1px;
+}
+*:hover::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.45)}
+*::-webkit-scrollbar-thumb:hover {background: rgba(0,0,0,0.55)}
+* {-webkit-overflow-scrolling: auto}
