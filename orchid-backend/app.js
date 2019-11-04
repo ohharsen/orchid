@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 
 var Product = require('./models/product');
 var Category = require('./models/category');
-var Customer = require('./models/customer');
+var Customer = require('./models/customer'); 
 var Store = require('./models/store');
 var Transactions = require('./models/transaction');
 var User = require('./models/user');
