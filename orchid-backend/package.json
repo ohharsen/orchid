@@ -2,8 +2,8 @@
   "name": "orchid",
   "version": "0.0.0",
   "private": true,
-  "heroku-postbuild": "cd client && npm install && npm run build",
   "scripts": {
+    "heroku-postbuild": "cd client && npm install && npm run build",
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www"
   },
