@@ -47,7 +47,7 @@ export default class InventoryComponent extends React.Component{
         this.handleFilterChange = this.handleFilterChange.bind(this);
     }
     componentDidMount(){
-        axios.get('http://localhost:3001/inventory/').then((response) => {
+        axios.get('https://orchid-backend.herokuapp.com/inventory/').then((response) => {
             if(response.status === 200){
                 response.data.products.forEach(element => {
                     element.checked = false;
@@ -98,7 +98,7 @@ export default class InventoryComponent extends React.Component{
         var prods = this.state.products.filter((val) => val.checked).map((val) => val._id);
         if(prods.length === 0) return;
          this.setState({fetching: true});
-          axios.delete('http://localhost:3001/inventory/', {data: {products: prods}})
+          axios.delete('https://orchid-backend.herokuapp.com/inventory/', {data: {products: prods}})
           .then((response) => {
             this.setState({products: response.data, fetching: false});
             })
@@ -129,7 +129,7 @@ export default class InventoryComponent extends React.Component{
         console.log(this.state.detailProduct.image);
         if(this.state.detailProduct.image) data.append('file', this.state.detailProduct.image);
         data.append('product', JSON.stringify(product));
-        axios.post('http://localhost:3001/inventory/new', data).then(response=>{
+        axios.post('https://orchid-backend.herokuapp.com/inventory/new', data).then(response=>{
             console.log(response);
             if(response.status == 500) 
             console.log(response.data);
@@ -164,7 +164,7 @@ export default class InventoryComponent extends React.Component{
         console.log(product);
         if(this.state.detailProduct.image) data.append('file', this.state.detailProduct.image);
         data.append('product', JSON.stringify(product));
-        axios.put('http://localhost:3001/inventory/update', data).then(response=>{
+        axios.put('https://orchid-backend.herokuapp.com/inventory/update', data).then(response=>{
             console.log(response);
             if(response.status == 500) 
             console.log(response.data);
