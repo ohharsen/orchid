@@ -27,6 +27,7 @@ router.get('/', function(req,res,next){
         });
         Product.find()
         .where('quantities').elemMatch({store: {$in: stores}})
+        .populate('quantities.store')
         .populate('category')
         .exec(function(err, products){
             User.findById(req.user._id)

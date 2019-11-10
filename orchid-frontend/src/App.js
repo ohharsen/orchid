@@ -9,6 +9,7 @@ import InventoryComponent from './components/inventory.component';
 import CustomersComponent from './components/customers.component';
 import CheckoutComponent from './components/checkout.component';
 import ReportsComponent from './components/reports.component';
+import SettingsComponent from './components/settings.component';
 
 class App extends React.Component {
   constructor(props){ 
@@ -46,6 +47,7 @@ class App extends React.Component {
           <Route exact path = "/customers" component={CustomersComponent} />
           <Route exact path = "/checkout" component={CheckoutComponent} />
           <Route path = "/reports" component={ReportsComponent} />
+          <Route path = "/settings" component={SettingsComponent} />
         </Switch>
       </FrameComponent>
     )
