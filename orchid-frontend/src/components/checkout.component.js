@@ -148,7 +148,7 @@ export default class CheckoutComponent extends React.Component{
 
     handleAddToCart(product){
         product = JSON.parse(JSON.stringify(this.state.detail));
-        if(product.quantities[product.quantities.map(val=>val.store).indexOf(this.state.store)].quantity === 0)
+        if(product.quantities[product.quantities.map(val=>val.store._id).indexOf(this.state.store)].quantity === 0)
             this.setState({errorMessages: ['The product is out of stock at the current store']});
         else if(this.state.cart.map(val=>val._id).indexOf(product._id) !== -1)
             this.setState({errorMessages: ['The product is already in the cart']});
@@ -178,7 +178,7 @@ export default class CheckoutComponent extends React.Component{
                 quantities: null, 
                 category: this.state.categories[0] 
             },
-            discount: this.state.detail.sales/1000 + 5
+            discount: this.state.detail.sales/(parseInt(localStorage.incrementDiscount) || 1500) + (parseInt(localStorage.initialDiscount) || 5)
         });
     }
 
@@ -511,7 +511,7 @@ function SearchFilter(props){
                 type="number" 
                 className="cart-item-quantity" 
                 min={1}
-                max={props.product &&props.product.quantities[props.product.quantities.map(val=>val.store).indexOf(props.store)].quantity || 9999}
+                max={props.product &&props.product.quantities[props.product.quantities.map(val=>val.store._id).indexOf(props.store)].quantity || 9999}
                 value={props.product && props.product.quantity} 
                 onChange={(e) => props.onChange(e, props.index)}
                 onBlur={(e) => props.onOutOfFocus(e, props.index)}

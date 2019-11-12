@@ -4,10 +4,16 @@ var User = mongoose.model('User');
 var Store = mongoose.model('Store');
 var router = express.Router();
 
+router.get('/', function(req, res, next){
+    User.findById(req.user._id)
+        .populate('stores')
+        .exec(function(err, user){
+            res.send({stores: user.stores});
+    });
+});
 
-
-router.delete('/', function(req,res,next){
-    console.log(req.body);
+router.post('/delete', function(req,res,next){
+    console.log(req.body.store);
     User.findById(req.user._id, (err, user) =>{
         user.stores.splice(user.stores.indexOf(req.body.store), 1);
         user.save((error, result)=>{

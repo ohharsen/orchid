@@ -66,9 +66,11 @@ export default class FrameComponent extends React.Component{
                     animationDuration={0.4}
                 />
             </div>
-            <div className="navbar-logo">
-                <p>orchid</p>
-            </div>
+            <NavLink to="/" style={{display: "block", margin: "auto"}}>
+                <div className="navbar-logo">
+                    <p>orchid</p>
+                </div>
+            </NavLink>
             <div className="navbar-logout" onClick={this.handleLogout}>
                 Logout
             </div>

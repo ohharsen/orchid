@@ -49,6 +49,7 @@ export default class InventoryComponent extends React.Component{
     componentDidMount(){
         axios.get('http://localhost:3001/inventory/').then((response) => {
             if(response.status === 200){
+                console.log(response.data.products);
                 response.data.products.forEach(element => {
                     element.checked = false;
                 });
@@ -117,7 +118,7 @@ export default class InventoryComponent extends React.Component{
         if(!product.price){
             errors.push('Price field is required');
         }
-        if(product.quantities.length == 0 || (product.quantities.map(function(val){return val.quantity})).indexOf('') != -1){
+        if(!product.quantities || (product.quantities.map(function(val){return val.quantity})).indexOf('') != -1){
             errors.push('Quantities fields are required');
         }
         if(errors.length === 0){
@@ -199,15 +200,15 @@ export default class InventoryComponent extends React.Component{
     handleInputChange(e){
         var target = e.target;
         var field = target.name;
-        var oldState = {...this.state};
+        var oldState = Object.assign({},this.state);
         if(/store/.test(target.id)){
-            var index = oldState.detailProduct['quantities'] && oldState.detailProduct['quantities'].map(function(val){return val.store}).indexOf(field);
+            var index = oldState.detailProduct['quantities'] && oldState.detailProduct['quantities'].map(function(val){return val.store._id}).indexOf(field);
             if(index ===null){
                 oldState.detailProduct['quantities'] = [];
-                oldState.detailProduct['quantities'].push({store: field, quantity:  target.value});
+                oldState.detailProduct['quantities'].push({store: {_id: field}, quantity:  target.value});
             }
             else if(index ===-1)
-                oldState.detailProduct['quantities'].push({store: field, quantity:  target.value});
+                oldState.detailProduct['quantities'].push({store: {_id: field}, quantity:  target.value});
             else
                 oldState.detailProduct['quantities'][index]['quantity'] = target.value;
         }
@@ -237,12 +238,20 @@ export default class InventoryComponent extends React.Component{
         var productish;
         var filters = this.state.filters;
         productish =JSON.parse(JSON.stringify(this.state)).products;
-        productish = productish.filter((val) => val.name.includes(this.state.searchText) || val.sku.includes(this.state.searchText) ? true : false);
-        productish = productish.filter((val) => filters.categories.indexOf(val.category._id) != -1 || filters.categories.length == 0);
-        productish.forEach(function(value) { 
-        value.quantities = value.quantities.reduce((acc=0, val) => acc+val.quantity, 0)
-        });
-        productish = productish.filter((val) => val.price >= filters.minPrice && val.price <= filters.maxPrice && val.quantities >= filters.minQuantity && val.quantities <= filters.maxQuantity); 
+        if(productish){
+            productish = productish.filter((val) => val.name.includes(this.state.searchText) || val.sku.includes(this.state.searchText) ? true : false);
+            productish = productish.filter((val) =>{
+                console.log(val);
+                 return val.cateogry && filters.categories.indexOf(val.category._id) != -1 || filters.categories.length == 0
+            });
+            productish.forEach((value) => { 
+            
+            value.quantities = value.quantities.filter((val) => {
+                return this.state.stores.map(value => value._id).indexOf(val.store._id) != -1;
+            }).reduce((acc=0, val) => acc+val.quantity, 0)
+            });
+            productish = productish.filter((val) => val.price >= filters.minPrice && val.price <= filters.maxPrice && val.quantities >= filters.minQuantity && val.quantities <= filters.maxQuantity); 
+        }
         //combine filters
         return (this.state.fetching? <SpinnerComponent /> : (
         <Categories.Provider value={this.state.categories}>
@@ -260,7 +269,7 @@ export default class InventoryComponent extends React.Component{
                 sortVal={this.state.sortVal}
             />
             <ul className="button-list">
-            {productish.sort(
+            {productish && productish.sort(
             (a,b) => 
                 a[this.state.sortBy] > b[this.state.sortBy] ? this.state.sortVal : -this.state.sortVal)
                 .map((val)=>
@@ -447,6 +456,7 @@ export const ButtonComponent = React.forwardRef ((props, ref) =>{
 });
 
 export function DetailInfoFields(props){
+    const [quantity, setQuantity] = useState([]);
     return(
         <div className="detail-info-fields">
         {props.ErrorMessages?
@@ -482,7 +492,7 @@ export function DetailInfoFields(props){
                 {props.stores.map((store, index)=>
                 <li key={store._id}>
                     <label htmlFor={`store_${store.name}`}> {capitalize(store.name)}:</label>
-                        <input disabled={props.disabled || false} type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`} value={props.product.quantities && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)] && props.product.quantities[props.product.quantities.map((val)=>val.store).indexOf(store._id)].quantity || 0}/>
+                        <input disabled={props.disabled || false} type='number' name={store._id} min={0} step={1} onChange={props.handleInputChange} id={`store_${store.name}`} defaultValue={props.product.quantities && props.product.quantities[props.product.quantities.map((val)=>val.store._id).indexOf(store._id)] && props.product.quantities[props.product.quantities.map((val)=>val.store._id).indexOf(store._id)].quantity || 0}/>
                 </li>)}
             </ul>
             </section>

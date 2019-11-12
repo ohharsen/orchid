@@ -157,7 +157,7 @@ function LowStockReports(props){
     state.products.forEach((prod) =>{
         prod.quantities.forEach((quant) => {
             console.log(quant.store);
-            if(quant.quantity == 1 || quant.quantity == 0){
+            if((localStorage.lowStock && quant.quantity <= localStorage.lowStock) || (quant.quantity == 1 || quant.quantity == 0)){
                 products.push({
                     _id: prod._id,
                     sku: prod.sku,

@@ -23,6 +23,7 @@ var inventoryRouter = require('./routes/inventory');
 var customerRouter = require('./routes/customers');
 var transactionRouter = require('./routes/transactions');
 var storeRouter = require('./routes/stores');
+var categoryRouter = require('./routes/categories');
 
 var app = express();
 
@@ -68,7 +69,11 @@ db.on('error', function(err, result){
   //         console.log(user);
   //   })
   //   );
-
+  Store.find({name: 'bessini'}, function(err, store){
+  User.create({name: 'gagulik', username: 'gagupik', password: 'gagulik', role: 'Employee', stores: store[0]._id}, function(err, user){
+      console.log(user);
+  });
+  })
 
 
 var passport = require('./config/passport');
@@ -111,6 +116,7 @@ app.use('/inventory', inventoryRouter);
 app.use('/customers', customerRouter);
 app.use('/transactions', transactionRouter);
 app.use('/stores', storeRouter);
+app.use('/categories', categoryRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

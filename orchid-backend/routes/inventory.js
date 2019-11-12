@@ -65,6 +65,7 @@ router.post('/new', function(req, res, next){
             });
             Product.find()
                 .where('quantities').elemMatch({store: {$in: stores}})
+                .populate('quantities.store')
                 .populate('category')
                 .exec(function(err, products){
                 return res.status(200).send({products: products});
@@ -96,6 +97,7 @@ router.put('/update', function(req,res,next){
             });
             Product.find()
                 .where('quantities').elemMatch({store: {$in: stores}})
+                .populate('quantities.store')
                 .populate('category')
                 .exec(function(err, products){
                 return res.status(200).send({products: products});
